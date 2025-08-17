@@ -840,6 +840,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 }
 
 // ▶️ BIN lookup
+$bin = substr($cc, 0, 6);
 $bininfo = json_decode(file_get_contents("https://lookup.binlist.net/$bin"), true);
 $bank = $bininfo['bank']['name'] ?? 'Unavailable';
 $country = $bininfo['country']['name'] ?? 'Unknown';

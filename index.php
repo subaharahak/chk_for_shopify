@@ -1,4 +1,3 @@
-<?php echo "Working"; ?>
 <?php
 session_start();
 // Turn off output buffering

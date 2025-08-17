@@ -121,7 +121,8 @@ $proxy_list_str = '
 107.172.163.27:6543:znkruahs:qji8izehszsr
 216.10.27.159:6837:znkruahs:qji8izehszsr
 136.0.207.84:6661:znkruahs:qji8izehszsr
-104.222.161.211:znkruahs:qji8izehszsr';
+104.222.161.211:6343:znkruahs:qji8izehszsr
+64.137.96.74:6641:znkruahs:qji8izehszsr';
 
 $proxies = explode("\n", $proxy_list_str);
 $proxy_array = [];

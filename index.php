@@ -1,10 +1,6 @@
 <?php echo "Working"; ?>
-
 <?php
-
 session_start();
-
-
 // Turn off output buffering
 @ob_end_flush();
 @ini_set('output_buffering', 'off');

@@ -872,4 +872,5 @@ $fullmsg .= "┗━━━━━━━━━━━━━━━━━━━━━�
 echo "<pre>" . htmlspecialchars($fullmsg, ENT_QUOTES, 'UTF-8') . "</pre>";
 echo str_repeat(' ', 1024);
 flush();
-?>
+
+}?>

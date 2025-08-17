@@ -236,7 +236,7 @@ if (empty($cc_lines)) {
 }
 
 // Check if more than 3 cards are entered
-if (count($cc_lines) >= 5) {
+if (count($cc_lines) >= 10) {
     echo '
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
@@ -304,7 +304,7 @@ if (count($cc_lines) >= 5) {
     </style>
     <div class="container fade-in">
         <h1>Mod By Goku</h1>
-        <p class="error">Error: You can only enter max 5 cards. Please try again.</p 5 cards. Please try again.</p>
+        <p class="error">Error: You can only enter max 5 cards. Please try again.</p 10 cards. Please try again.</p>
         <form method="post">
             <textarea name="cc_input" rows="10" cols="50" placeholder="Enter CC details (max 5 cards, one per line)"></textarea><br>
             <input type="submit" value="Start Checking">

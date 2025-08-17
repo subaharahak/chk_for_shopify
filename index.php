@@ -798,43 +798,44 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'x-checkout-web-source-id: ' . $checkoutToken,
 ]);
 
-curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
+try {
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
 
-$start = microtime(true); // ▶️ Start timing
+    $start = microtime(true); // ▶️ Start timing
 
-$response5 = curl_exec($ch);
+    $response5 = curl_exec($ch);
 
-$end = microtime(true); // ▶️ End timing
-$time_taken = number_format($end - $start, 2);
+    $end = microtime(true); // ▶️ End timing
+    $time_taken = number_format($end - $start, 2);
 
-curl_close($ch);
+    curl_close($ch);
 
-$r5js = json_decode($response5);
+    $r5js = json_decode($response5);
 
-if (str_contains($response5, $checkouturl . '/thank_you')) {
-    $err = '🔥Thank you for your purchase! -> $13.99';
-} elseif (str_contains($response5, $checkouturl . '/post_purchase')) {
-    $err = '🔥Thank you for your purchase! -> $13.99'; 
-} elseif (str_contains($response5, 'Your order is confirmed')) {
-    $err = '🔥Your Order Has Been Placed! ->> $13.98';
-} elseif (isset($r5js->data->receipt->processingError->code)) {
-    $err = $r5js->data->receipt->processingError->code;
-} elseif (str_contains($response5, 'CompletePaymentChallenge')) {
-    $err = '⚠️ 3D Secure Card Challenge !!';
-} elseif (str_contains($response5, 'https://blackmp.life/stripe/authentications/')) {
-    $err = '⚠️3DS Required !!';
-} elseif (isset($r5js->data->receipt->action->__typename) && $r5js->data->receipt->action->__typename == 'CompletePaymentChallenge') {
-    $err = '⚠️3DS Secure Required !!';
-} elseif (isset($r5js->data->receipt->action->url)) {
-    $err = '⚠️ 3d Secure Card !!';
-} elseif (preg_match('/CompletePaymentChallenge/', $response5)) {
-    $err = '⚠️ 3D secure';
-} else {
-    $err = 'Response is empty!';
-}
+    if (str_contains($response5, $checkouturl . '/thank_you')) {
+        $err = '🔥Thank you for your purchase! -> $13.99';
+    } elseif (str_contains($response5, $checkouturl . '/post_purchase')) {
+        $err = '🔥Thank you for your purchase! -> $13.99'; 
+    } elseif (str_contains($response5, 'Your order is confirmed')) {
+        $err = '🔥Your Order Has Been Placed! ->> $13.98';
+    } elseif (isset($r5js->data->receipt->processingError->code)) {
+        $err = $r5js->data->receipt->processingError->code;
+    } elseif (str_contains($response5, 'CompletePaymentChallenge')) {
+        $err = '⚠️ 3D Secure Card Challenge !!';
+    } elseif (str_contains($response5, 'https://blackmp.life/stripe/authentications/')) {
+        $err = '⚠️3DS Required !!';
+    } elseif (isset($r5js->data->receipt->action->__typename) && $r5js->data->receipt->action->__typename == 'CompletePaymentChallenge') {
+        $err = '⚠️3DS Secure Required !!';
+    } elseif (isset($r5js->data->receipt->action->url)) {
+        $err = '⚠️ 3d Secure Card !!';
+    } elseif (preg_match('/CompletePaymentChallenge/', $response5)) {
+        $err = '⚠️ 3D secure';
+    } else {
+        $err = 'Response is empty!';
+    }
 
-} catch(Exception $e){
-    if(empty($err)){
+} catch(Exception $e) {
+    if (empty($err)) {
         $err = $e->getMessage();
     }
 }

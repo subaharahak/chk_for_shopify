@@ -821,19 +821,19 @@ $agent = new userAgent();
 $ua = $agent->generate('windows');
 
 // Important functions start
-function find_between($content, $start, $end)
-{
-    $startPos = strpos($content, $start);
-    if ($startPos === false) {
-        return '';
-    }
-    $startPos += strlen($start);
-    $endPos = strpos($content, $end, $startPos);
-    if ($endPos === false) {
-        return '';
-    }
-    return substr($content, $startPos, $endPos - $startPos);
-}
+//function find_between($content, $start, $end)
+//{
+  //  $startPos = strpos($content, $start);
+   // if ($startPos === false) {
+  //      return '';
+ //   }
+  //  $startPos += strlen($start);
+ //   $endPos = strpos($content, $end, $startPos);
+  //  if ($endPos === false) {
+  //      return '';
+   // }
+   // return substr($content, $startPos, $endPos - $startPos);
+//}
 
 $proxy_list_str = '
 proxy.geonode.io:9000:geonode_bGyg00m4jK-type-residential:fb5dd8fc-181d-46d9-bc73-0c4c0cc4b1d3

@@ -841,12 +841,12 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 
 // ▶️ BIN lookup
 $bin = substr($cc, 0, 6);
-$bininfo = json_decode(file_get_contents("https://lookup.binlist.net/$bin"), true);
-$bank = $bininfo['bank']['name'] ?? 'Unavailable';
-$country = $bininfo['country']['name'] ?? 'Unknown';
-$brand = $bininfo['scheme'] ?? 'Unknown';
-$type = $bininfo['type'] ?? 'Unknown';
+$bininfo = json_decode(file_get_contents("https://bins.antipublic.cc/bins/{$bin}"), true);
 
+$bank = $bininfo['data']['bank'] ?? 'Unavailable';
+$country = $bininfo['data']['country'] ?? 'Unknown';
+$brand = $bininfo['data']['vendor'] ?? 'Unknown';
+$type = $bininfo['data']['type'] ?? 'Unknown';
 
 // ▶️ Status logic
 if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'Order') !== false) {

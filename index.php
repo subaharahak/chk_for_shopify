@@ -193,7 +193,7 @@ if (isset($_GET['lista'])) {
             $err = 'Payment Method Identifier Token is empty';
             throw new Exception($err);
         }
-                // ▶️ BIN lookup
+                    // ▶️ BIN lookup
         $bin = substr($cc, 0, 6);
 
         // 🧠 First try binlist.net
@@ -213,6 +213,9 @@ if (isset($_GET['lista'])) {
             $type = $bininfo['type'] ?? 'Unknown';
         }
 
+        // Fix undefined time_taken variable
+        $time_taken = isset($time_taken) ? $time_taken : '0.00';
+
         // ▶️ Status logic
         if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'Order') !== false) {
             $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 𝐂𝐂";
@@ -222,6 +225,7 @@ if (isset($_GET['lista'])) {
 
         $gate = "🛒 𝐆𝐀𝐓𝐄𝐖𝐀𝐘 ↯ Stripe + Shopify $13.98 (Graphql) Charge";
 
+        // Fixed formatting to match POST output exactly
         $fullmsg  = "┏━━━━━━━━━━━━━━━━━━━━━━━┓\n";
         $fullmsg .= "💥 {$gate}\n";
         $fullmsg .= "━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -237,6 +241,9 @@ if (isset($_GET['lista'])) {
         $fullmsg .= "👑 𝐎𝐖𝐍𝐄𝐑 ↯ @mhitzxg | @pr0xy_xd\n";
         $fullmsg .= "┗━━━━━━━━━━━━━━━━━━━━━━━┛";
 
+        // Clean output buffer and send response
+        while (ob_get_level()) ob_end_clean();
+        header('Content-Type: text/plain; charset=UTF-8');
         echo $fullmsg;
         exit;
     } catch(Exception $e) {
@@ -247,84 +254,3 @@ if (isset($_GET['lista'])) {
         exit;
     }
 }
-
-// [Rest of your original form processing code remains unchanged...]
-// Display the input form for CC
-if (!isset($_POST['cc_input'])) {
-    echo '
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
-        body {
-            font-family: "Poppins", sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            text-align: center;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 1.5rem;
-        }
-        textarea {
-            width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 1rem;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-        textarea:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        input[type="submit"]:active {
-            transform: scale(0.98);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        .error {
-            color: red;
-            margin-top: 1rem;
-        }
-    </style>
-    <div class="container fade-in">
-        <h1>Mod By Goku</h1>
-        <form method="post">
-            <textarea name="cc_input" rows="10" cols="50" placeholder="Enter CC details (max 10 cards, one per line)"></textarea><br>
-            <input type="submit" value="Start Checking">
-        </form>
-    </div>';
-    exit;
-}
-
-// [Rest of your original POST processing code...]
-?>

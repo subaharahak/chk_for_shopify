@@ -798,7 +798,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'x-checkout-web-source-id: ' . $checkoutToken,
 ]);
 
-try {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
 
     $start = microtime(true); // ▶️ Start timing

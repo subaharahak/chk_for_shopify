@@ -1,3 +1,4 @@
+<?php
 session_start();
 // Turn off output buffering
 @ob_end_flush();

@@ -804,7 +804,7 @@ $fullmsg .= "┗━━━━━━━━━━━━━━━━━━━━━�
 echo "<pre>" . htmlspecialchars($fullmsg, ENT_QUOTES, 'UTF-8') . "</pre>";
 echo str_repeat(' ', 1024);
 flush();
-    exit;
+} exit;
 // Turn off output buffering
 @ob_end_flush();
 @ini_set('output_buffering', 'off');

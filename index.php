@@ -849,9 +849,9 @@ $type = $bininfo['type'] ?? 'Unknown';
 
 // ▶️ Status logic
 if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'Order') !== false) {
-    $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃";
+    $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 𝐂𝐂";
 } else {
-    $status = "❌ 𝐃𝐄𝐂𝐋𝐈𝐍𝐄𝐃";
+    $status = "❌ 𝐃𝐄𝐂𝐋𝐈𝐍𝐄𝐃 𝐂𝐂";
 }
 
 $gate = "🛒 𝐆𝐀𝐓𝐄𝐖𝐀𝐘 ↯ Stripe + Shopify $13.98 (Graphql) Charge";

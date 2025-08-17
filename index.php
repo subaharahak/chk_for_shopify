@@ -129,7 +129,12 @@ $proxy_array = [];
 foreach ($proxies as $proxy_line) {
 $proxy_line = trim($proxy_line);
 if (empty($proxy_line)) continue;
-list($ip, $port, $username, $password) = explode(':', $proxy_line);
+$parts = explode(':', $proxy_line);
+$ip = $parts[0] ?? '';
+$port = $parts[1] ?? '';
+$username = $parts[2] ?? '';
+$password = $parts[3] ?? '';
+
 $proxy_array[] = [
     'ip' => $ip,
     'port' => $port,

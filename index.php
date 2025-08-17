@@ -862,11 +862,13 @@ $fullmsg .= "💥 {$gate}\n";
 $fullmsg .= "━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 $fullmsg .= "{$status}\n\n";
 $fullmsg .= "💳 𝐂𝐀𝐑𝐃   ↯ {$cc}|{$sub_month}|{$year}|{$cvv}\n";
+$fullmsg .= "📩 𝐑𝐄𝐒𝐏𝐎𝐍𝐒𝐄 ↯ {$err}\n\n";
+    
 $fullmsg .= "🏦 𝐁𝐀𝐍𝐊   ↯ {$bank} - {$brand} - {$type}\n";
 $fullmsg .= "🌎 𝐂𝐎𝐔𝐍𝐓𝐑𝐘 ↯ {$country}\n";
 $fullmsg .= "🕒 𝐓𝐈𝐌𝐄   ↯ " . date('Y-m-d H:i:s') . "\n";
 $fullmsg .= "⏱️ 𝐒𝐏𝐄𝐄𝐃  ↯ {$time_taken}s\n";
-$fullmsg .= "📩 𝐑𝐄𝐒𝐏𝐎𝐍𝐒𝐄 ↯ {$err}\n\n";
+
 $fullmsg .= "👑 𝐎𝐖𝐍𝐄𝐑 ↯ @mhitzxg | @pr0xy_xd\n";
 $fullmsg .= "┗━━━━━━━━━━━━━━━━━━━━━━━┛";
 

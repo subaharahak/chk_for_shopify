@@ -30,11 +30,16 @@ function find_between($content, $start, $end)
 }
 
 $proxy_list_str = '
-136.0.207.84:6661:keubeene:lw71xa1t734m
-142.147.128.93:6593:keubeene:lw71xa1t734m
-23.95.150.145:6114:keubeene:lw71xa1t734m
-23.95.150.145:6540:keubeene:lw71xa1t734m
-';
+23.95.150.145:6114:znkruahs:qji8izehszsr
+198.23.239.134:6540:znkruahs:qji8izehszsr
+45.38.107.97:6014:znkruahs:qji8izehszsr
+107.172.163.27:6543:znkruahs:qji8izehszsr
+64.137.96.74:6641:znkruahs:qji8izehszsr
+45.43.186.39:6257:znkruahs:qji8izehszsr
+154.203.43.247:5536:znkruahs:qji8izehszsr
+216.10.27.159:6837:znkruahs:qji8izehszsr
+136.0.207.84:6661:znkruahs:qji8izehszsr
+142.147.128.93:6593:znkruahs:qji8izehszsr';
 
 $proxies = explode("\n", $proxy_list_str);
 $proxy_array = [];

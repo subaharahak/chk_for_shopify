@@ -30,17 +30,16 @@ function find_between($content, $start, $end)
 }
 
 $proxy_list_str = '
-proxy.geonode.io:9000:geonode_bLyg00m4jK-type-residential:fb5dd8fc-181d-46d9-bc73-0c4c0cc4b1d3
 142.147.128.93:6593:znkruahs:qji8izehszsr
-23.95.150.145:6114:znkruahs:qji8izehszsr
 198.23.239.134:6540:znkruahs:qji8izehszsr
-45.38.107.97:6014:znkruahs:qji8izehszsr
-207.244.217.165:6712:znkruahs:qji8izehszsr
 107.172.163.27:6543:znkruahs:qji8izehszsr
 216.10.27.159:6837:znkruahs:qji8izehszsr
 136.0.207.84:6661:znkruahs:qji8izehszsr
-104.222.161.211:6343:znkruahs:qji8izehszsr
-64.137.96.74:6641:znkruahs:qji8izehszsr';
+23.95.150.145:5114:znkruahs:qji8izehszsr
+45.38.107.97:6014:znkruahs:qji8izehszsr
+64.137.96.74:6641:znkruahs:qji8izehszsr
+45.43.186.39:6257:znkruahs:qji8izehszsr
+154.203.43.247:5336:znkruahs:qji8izehszsr';
 
 $proxies = explode("\n", $proxy_list_str);
 $proxy_array = [];

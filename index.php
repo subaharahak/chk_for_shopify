@@ -164,7 +164,7 @@ if (empty($cc_lines)) {
 }
 
 // Check if more than 10 cards are entered
-if (count($cc_lines) >= 11) {
+if (count($cc_lines) >= 100) {
     echo '
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");

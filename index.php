@@ -495,9 +495,24 @@ foreach ($cc_lines as $cc_line) {
         submitForCompletion(input: $input, attemptToken: $attemptToken) {
             ...on SubmitSuccess {
                 receipt {
-                    id
-                    token
-                    redirectUrl
+                    ...on ProcessedReceipt {
+                        id
+                        token
+                        redirectUrl
+                    }
+                    ...on ProcessingReceipt {
+                        id
+                        pollDelay
+                    }
+                    ...on FailedReceipt {
+                        id
+                        processingError {
+                            ...on PaymentFailed {
+                                code
+                                messageUntranslated
+                            }
+                        }
+                    }
                 }
             }
             ...on SubmitFailed {

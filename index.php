@@ -491,154 +491,40 @@ foreach ($cc_lines as $cc_line) {
         ]);
 
         $postf = json_encode([
-            'query' => 'mutation SubmitForCompletion($input:NegotiationInput!,$attemptToken:String!,$metafields:[MetafieldInput!],$postPurchaseInquiryResult:PostPurchaseInquiryResultCode,$analytics:AnalyticsInput){submitForCompletion(input:$input attemptToken:$attemptToken metafields:$metafields postPurchaseInquiryResult:$postPurchaseInquiryResult analytics:$analytics){...on SubmitSuccess{receipt{...ReceiptDetails __typename}__typename}...on SubmitAlreadyAccepted{receipt{...ReceiptDetails __typename}__typename}...on SubmitFailed{reason __typename}...on SubmitRejected{buyerProposal{...BuyerProposalDetails __typename}sellerProposal{...ProposalDetails __typename}errors{...on NegotiationError{code localizedMessage nonLocalizedMessage localizedMessageHtml...on RemoveTermViolation{message{code localizedDescription __typename}target __typename}...on AcceptNewTermViolation{message{code localizedDescription __typename}target __typename}...on ConfirmChangeViolation{message{code localizedDescription __typename}from to __typename}...on UnprocessableTermViolation{message{code localizedDescription __typename}target __typename}...on UnresolvableTermViolation{message{code localizedDescription __typename}target __typename}...on ApplyChangeViolation{message{code localizedDescription __typename}target from{...on ApplyChangeValueInt{value __typename}...on ApplyChangeValueRemoval{value __typename}...on ApplyChangeValueString{value __typename}__typename}to{...on ApplyChangeValueInt{value __typename}...on ApplyChangeValueRemoval{value __typename}...on ApplyChangeValueString{value __typename}__typename}__typename}...on InputValidationError{field __typename}...on PendingTermViolation{__typename}__typename}__typename}__typename}...on Throttled{pollAfter pollUrl queueToken buyerProposal{...BuyerProposalDetails __typename}__typename}...on CheckpointDenied{redirectUrl __typename}...on TooManyAttempts{redirectUrl __typename}...on SubmittedForCompletion{receipt{...ReceiptDetails __typename}__typename}__typename}}fragment ReceiptDetails on Receipt{...on ProcessedReceipt{id token redirectUrl confirmationPage{url shouldRedirect __typename}orderStatusPageUrl shopPay shopPayInstallments paymentExtensionBrand analytics{checkoutCompletedEventId emitConversionEvent __typename}poNumber orderIdentity{buyerIdentifier id __typename}customerId isFirstOrder eligibleForMarketingOptIn purchaseOrder{...ReceiptPurchaseOrder __typename}orderCreationStatus{__typename}paymentDetails{paymentCardBrand creditCardLastFourDigits paymentAmount{amount currencyCode __typename}paymentGateway financialPendingReason paymentDescriptor buyerActionInfo{...on MultibancoBuyerActionInfo{entity reference __typename}__typename}__typename}shopAppLinksAndResources{mobileUrl qrCodeUrl canTrackOrderUpdates shopInstallmentsViewSchedules shopInstallmentsMobileUrl installmentsHighlightEligible mobileUrlAttributionPayload shopAppEligible shopAppQrCodeKillswitch shopPayOrder payEscrowMayExist buyerHasShopApp buyerHasShopPay orderUpdateOptions __typename}postPurchasePageUrl postPurchasePageRequested postPurchaseVaultedPaymentMethodStatus paymentFlexibilityPaymentTermsTemplate{__typename dueDate dueInDays id translatedName type}__typename}...on ProcessingReceipt{id purchaseOrder{...ReceiptPurchaseOrder __typename}pollDelay __typename}...on WaitingReceipt{id pollDelay __typename}...on ActionRequiredReceipt{id action{...on CompletePaymentChallenge{offsiteRedirect url __typename}...on CompletePaymentChallengeV2{challengeType challengeData __typename}__typename}timeout{millisecondsRemaining __typename}__typename}...on FailedReceipt{id processingError{...on InventoryClaimFailure{__typename}...on InventoryReservationFailure{__typename}...on OrderCreationFailure{paymentsHaveBeenReverted __typename}...on OrderCreationSchedulingFailure{__typename}...on PaymentFailed{code messageUntranslated hasOffsitePaymentMethod __typename}...on DiscountUsageLimitExceededFailure{__typename}...on CustomerPersistenceFailure{__typename}__typename}__typename}__typename}fragment ReceiptPurchaseOrder on PurchaseOrder{__typename sessionToken totalAmountToPay{amount currencyCode __typename}checkoutCompletionTarget delivery{...on PurchaseOrderDeliveryTerms{splitShippingToggle deliveryLines{__typename availableOn deliveryStrategy{handle title description methodType brandedPromise{handle logoUrl lightThemeLogoUrl darkThemeLogoUrl lightThemeCompactLogoUrl darkThemeCompactLogoUrl name __typename}pickupLocation{...on PickupInStoreLocation{name address{address1 address2 city countryCode zoneCode postalCode phone coordinates{latitude longitude __typename}__typename}instructions __typename}...on PickupPointLocation{address{address1 address2 address3 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}__typename}carrierCode carrierName name carrierLogoUrl fromDeliveryOptionGenerator __typename}__typename}deliveryPromisePresentmentTitle{short long __typename}deliveryStrategyBreakdown{__typename amount{...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}__typename}discountRecurringCycleLimit excludeFromDeliveryOptionPrice flatRateGroupId targetMerchandise{...on PurchaseOrderMerchandiseLine{stableId quantity{...on PurchaseOrderMerchandiseQuantityByItem{items __typename}__typename}merchandise{...on ProductVariantSnapshot{...ProductVariantSnapshotMerchandiseDetails __typename}__typename}legacyFee __typename}...on PurchaseOrderBundleLineComponent{stableId quantity merchandise{...on ProductVariantSnapshot{...ProductVariantSnapshotMerchandiseDetails __typename}__typename}__typename}__typename}}__typename}lineAmount{amount currencyCode __typename}lineAmountAfterDiscounts{amount currencyCode __typename}destinationAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}__typename}groupType targetMerchandise{...on PurchaseOrderMerchandiseLine{stableId quantity{...on PurchaseOrderMerchandiseQuantityByItem{items __typename}__typename}merchandise{...on ProductVariantSnapshot{...ProductVariantSnapshotMerchandiseDetails __typename}__typename}legacyFee __typename}...on PurchaseOrderBundleLineComponent{stableId quantity merchandise{...on ProductVariantSnapshot{...ProductVariantSnapshotMerchandiseDetails __typename}__typename}__typename}__typename}}__typename}__typename}deliveryExpectations{__typename brandedPromise{name logoUrl handle lightThemeLogoUrl darkThemeLogoUrl __typename}deliveryStrategyHandle deliveryExpectationPresentmentTitle{short long __typename}returnability{returnable __typename}}payment{...on PurchaseOrderPaymentTerms{billingAddress{__typename...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}}paymentLines{amount{amount currencyCode __typename}postPaymentMessage dueAt due{...on PaymentLineDueEvent{event __typename}...on PaymentLineDueTime{time __typename}__typename}paymentMethod{...on DirectPaymentMethod{sessionId paymentMethodIdentifier vaultingAgreement creditCard{brand lastDigits __typename}billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on CustomerCreditCardPaymentMethod{id brand displayLastDigits token deletable defaultPaymentMethod requiresCvvConfirmation firstDigits billingAddress{...on StreetAddress{address1 address2 city company countryCode firstName lastName phone postalCode zoneCode __typename}__typename}__typename}...on PurchaseOrderGiftCardPaymentMethod{balance{amount currencyCode __typename}code __typename}...on WalletPaymentMethod{name walletContent{...on ShopPayWalletContent{billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}...on InvalidBillingAddress{__typename}__typename}sessionToken paymentMethodIdentifier paymentMethod paymentAttributes __typename}...on PaypalWalletContent{billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}...on InvalidBillingAddress{__typename}__typename}email payerId token expiresAt __typename}...on ApplePayWalletContent{billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}...on InvalidBillingAddress{__typename}__typename}data signature version __typename}...on GooglePayWalletContent{billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}...on InvalidBillingAddress{__typename}__typename}signature signedMessage protocolVersion __typename}...on ShopifyInstallmentsWalletContent{autoPayEnabled billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}...on InvalidBillingAddress{__typename}__typename}disclosureDetails{evidence id type __typename}installmentsToken sessionToken creditCard{brand lastDigits __typename}__typename}__typename}__typename}...on WalletsPlatformPaymentMethod{name walletParams __typename}...on LocalPaymentMethod{paymentMethodIdentifier name displayName billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on PaymentOnDeliveryMethod{additionalDetails paymentInstructions paymentMethodIdentifier billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on OffsitePaymentMethod{paymentMethodIdentifier name billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on ManualPaymentMethod{additionalDetails name paymentInstructions id paymentMethodIdentifier billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on CustomPaymentMethod{additionalDetails name paymentInstructions id paymentMethodIdentifier billingAddress{...on StreetAddress{name firstName lastName company address1 address2 city countryCode zoneCode postalCode coordinates{latitude longitude __typename}phone __typename}...on InvalidBillingAddress{__typename}__typename}__typename}...on DeferredPaymentMethod{orderingIndex displayName __typename}...on PaypalBillingAgreementPaymentMethod{token billingAddress{...on StreetAddress{address1 address2 city company countryCode firstName lastName phone postalCode zoneCode __typename}__typename}__typename}...on RedeemablePaymentMethod{redemptionSource redemptionContent{...on ShopCashRedemptionContent{redemptionPaymentOptionKind billingAddress{...on StreetAddress{firstName lastName company address1 address2 city countryCode zoneCode postalCode phone __typename}__typename}redemptionId details{redemptionId sourceAmount{amount currencyCode __typename}destinationAmount{amount currencyCode __typename}redemptionType __typename}__typename}...on CustomRedemptionContent{redemptionAttributes{key value __typename}maskedIdentifier paymentMethodIdentifier __typename}...on StoreCreditRedemptionContent{storeCreditAccountId __typename}__typename}__typename}...on CustomOnsitePaymentMethod{paymentMethodIdentifier name __typename}__typename}__typename}__typename}__typename}buyerIdentity{...on PurchaseOrderBuyerIdentityTerms{contactMethod{...on PurchaseOrderEmailContactMethod{email __typename}...on PurchaseOrderSMSContactMethod{phoneNumber __typename}__typename}marketingConsent{...on PurchaseOrderEmailContactMethod{email __typename}...on PurchaseOrderSMSContactMethod{phoneNumber __typename}__typename}__typename}customer{__typename...on GuestProfile{presentmentCurrency countryCode market{id handle __typename}__typename}...on DecodedCustomerProfile{id presentmentCurrency fullName firstName lastName countryCode email imageUrl acceptsSmsMarketing acceptsEmailMarketing ordersCount phone __typename}...on BusinessCustomerProfile{checkoutExperienceConfiguration{editableShippingAddress __typename}id presentmentCurrency fullName firstName lastName acceptsSmsMarketing acceptsEmailMarketing countryCode imageUrl email ordersCount phone market{id handle __typename}__typename}}purchasingCompany{company{id externalId name __typename}contact{locationCount __typename}location{id externalId name __typename}__typename}__typename}merchandise{taxesIncluded merchandiseLines{stableId legacyFee merchandise{...ProductVariantSnapshotMerchandiseDetails __typename}lineAllocations{checkoutPriceAfterDiscounts{amount currencyCode __typename}checkoutPriceAfterLineDiscounts{amount currencyCode __typename}checkoutPriceBeforeReductions{amount currencyCode __typename}quantity stableId totalAmountAfterDiscounts{amount currencyCode __typename}totalAmountAfterLineDiscounts{amount currencyCode __typename}totalAmountBeforeReductions{amount currencyCode __typename}discountAllocations{__typename amount{amount currencyCode __typename}discount{...DiscountDetailsFragment __typename}}unitPrice{measurement{referenceUnit referenceValue __typename}price{amount currencyCode __typename}__typename}__typename}lineComponents{...PurchaseOrderBundleLineComponent __typename}quantity{__typename...on PurchaseOrderMerchandiseQuantityByItem{items __typename}}recurringTotal{fixedPrice{__typename amount currencyCode}fixedPriceCount interval intervalCount recurringPrice{__typename amount currencyCode}title __typename}lineAmount{__typename amount currencyCode}parentRelationship{parent{stableId lineAllocations{stableId __typename}__typename}__typename}__typename}__typename}tax{totalTaxAmountV2{__typename amount currencyCode}totalDutyAmount{amount currencyCode __typename}totalTaxAndDutyAmount{amount currencyCode __typename}totalAmountIncludedInTarget{amount currencyCode __typename}__typename}discounts{lines{...PurchaseOrderDiscountLineFragment __typename}__typename}legacyRepresentProductsAsFees totalSavings{amount currencyCode __typename}subtotalBeforeTaxesAndShipping{amount currencyCode __typename}legacySubtotalBeforeTaxesShippingAndFees{amount currencyCode __typename}legacyAggregatedMerchandiseTermsAsFees{title description total{...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}__typename}__typename}landedCostDetails{incotermInformation{incoterm reason __typename}__typename}optionalDuties{buyerRefusesDuties refuseDutiesPermitted __typename}dutiesIncluded tip{tipLines{amount{amount currencyCode __typename}__typename}__typename}hasOnlyDeferredShipping note{customAttributes{key value __typename}message __typename}shopPayArtifact{optIn{vaultPhone __typename}__typename}recurringTotals{fixedPrice{amount currencyCode __typename}fixedPriceCount interval intervalCount recurringPrice{amount currencyCode __typename}title __typename}checkoutTotalBeforeTaxesAndShipping{__typename amount currencyCode}checkoutTotal{__typename amount currencyCode}checkoutTotalTaxes{__typename amount currencyCode}subtotalBeforeReductions{__typename amount currencyCode}subtotalAfterMerchandiseDiscounts{__typename amount currencyCode}deferredTotal{amount{__typename...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}}dueAt subtotalAmount{__typename...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}}taxes{__typename...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}}__typename}metafields{key namespace value valueType:type __typename}}fragment ProductVariantSnapshotMerchandiseDetails on ProductVariantSnapshot{variantId options{name value __typename}productTitle title productUrl untranslatedTitle untranslatedSubtitle sellingPlan{name id digest deliveriesPerBillingCycle prepaid subscriptionDetails{billingInterval billingIntervalCount billingMaxCycles deliveryInterval deliveryIntervalCount __typename}__typename}deferredAmount{amount currencyCode __typename}digest giftCard image{altText url one:url(transform:{maxWidth:64,maxHeight:64})two:url(transform:{maxWidth:128,maxHeight:128})four:url(transform:{maxWidth:256,maxHeight:256})__typename}price{amount currencyCode __typename}productId productType properties{...MerchandiseProperties __typename}requiresShipping sku taxCode taxable vendor weight{unit value __typename}__typename}fragment MerchandiseProperties on MerchandiseProperty{name value{...on MerchandisePropertyValueString{string:value __typename}...on MerchandisePropertyValueInt{int:value __typename}...on MerchandisePropertyValueFloat{float:value __typename}...on MerchandisePropertyValueBoolean{boolean:value __typename}...on MerchandisePropertyValueJson{json:value __typename}__typename}visible __typename}fragment DiscountDetailsFragment on Discount{...on CustomDiscount{title description presentationLevel allocationMethod targetSelection targetType signature signatureUuid type value{...on PercentageValue{percentage __typename}...on FixedAmountValue{appliesOnEachItem fixedAmount{...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}__typename}__typename}__typename}__typename}...on CodeDiscount{title code presentationLevel allocationMethod message targetSelection targetType value{...on PercentageValue{percentage __typename}...on FixedAmountValue{appliesOnEachItem fixedAmount{...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}__typename}__typename}__typename}__typename}...on DiscountCodeTrigger{code __typename}...on AutomaticDiscount{presentationLevel title allocationMethod message targetSelection targetType value{...on PercentageValue{percentage __typename}...on FixedAmountValue{appliesOnEachItem fixedAmount{...on MoneyValueConstraint{value{amount currencyCode __typename}__typename}__typename}__typename}__typename}__typename}__typename}fragment PurchaseOrderBundleLineComponent on PurchaseOrderBundleLineComponent{stableId merchandise{...ProductVariantSnapshotMerchandiseDetails __typename}lineAllocations{checkoutPriceAfterDiscounts{amount currencyCode __typename}checkoutPriceAfterLineDiscounts{amount currencyCode __typename}checkoutPriceBeforeReductions{amount currencyCode __typename}quantity stableId totalAmountAfterDiscounts{amount currencyCode __typename}totalAmountAfterLineDiscounts{amount currencyCode __typename}totalAmountBeforeReductions{amount currencyCode __typename}discountAllocations{__typename amount{amount currencyCode __typename}discount{...DiscountDetailsFragment __typename}index}unitPrice{measurement{referenceUnit referenceValue __typename}price{amount currencyCode __typename}__typename}__typename}quantity recurringTotal{fixedPrice{__typename amount currencyCode}fixedPriceCount interval intervalCount recurringPrice{__typename amount currencyCode}title __typename}totalAmount{__typename amount currencyCode}__typename}fragment PurchaseOrderDiscountLineFragment on PurchaseOrderDiscountLine{discount{...DiscountDetailsFragment __typename}lineAmount{amount currencyCode __typename}deliveryAllocations{amount{amount currencyCode __typename}discount{...DiscountDetailsFragment __typename}index stableId targetType __typename}merchandiseAllocations{amount{amount currencyCode __typename}discount{...DiscountDetailsFragment __typename}index stableId targetType __typename}__typename}',
-            'variables' => [
-                'input' => [
-                'sessionInput' => [
-                    'sessionToken' => $x_checkout_one_session_token
-                ],
-                'queueToken' => $queue_token,
-                    'discounts' => [
-                        'lines' => [],
-                        'acceptUnexpectedDiscounts' => true
-                    ],
-                    'delivery' => [
-                        'deliveryLines' => [
-                            [
-                                'destination' => [
-                                    'streetAddress' => [
-                                        'address1' => '4th Street Venue',
-                                        'city' => 'New york',
-                                        'countryCode' => 'US',
-                                        'postalCode' => '10080',
-                                        'firstName' => 'yashi Kumbi',
-                                        'lastName' => 'Hasi',
-                                        'zoneCode' => 'NY',
-                                        'phone' => '',
-                                        'oneTimeUse' => false
-                                    ]
-                                ],
-                                'selectedDeliveryStrategy' => [
-                                    'deliveryStrategyByHandle' => [
-                                        'handle' => 'eedd39a6a58d3e7832641de01fda4ff4-76541393eff3a16bf34c87eae9303e6b',
-                                        'customDeliveryRate' => false
-                                    ],
-                                    'options' => new stdClass()
-                                ],
-                                'targetMerchandiseLines' => [
-                                    'lines' => [
-                                        [
-                                            'stableId' => $stable_id,
-                                        ]
-                                    ]
-                                ],
-                                'deliveryMethodTypes' => [
-                                    'SHIPPING'
-                                ],
-                                'expectedTotalPrice' => [
-                                    'value' => [
-                                        'amount' => '5.99',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ],
-                                'destinationChanged' => false
-                            ]
-                        ],
-                        'noDeliveryRequired' => [],
-                        'useProgressiveRates' => false,
-                        'prefetchShippingRatesStrategy' => null,
-                        'supportsSplitShipping' => true
-                    ],
-                    'deliveryExpectations' => [
-                        'deliveryExpectationLines' => [
-                            [
-                                'signedHandle' => 'GacEWlcKhzf/glwqOAIWJ1+8Wm7FEdoFHkF8WqQPDvS9/a1zBmB9wSpJuYjAQuTixYpWBIQFhaIW4LIP7dScdjbKAg9QfOrm6QZZd6t+bCYiMHwXQp3F+1em4B9os3WUJGWpqE8MhzbRWuq0UPB8pORIM9gzkdsLk1h5iCMbVjDQi/psTk8kmVfDSUPPpbduYZLbq282fUhtsofq4MckjCqUAk9fMruZfdobG1ZPe4G3I9/yxHd4fZkag1J7tSAU3cdsF4rwqFFcEOn1pIRj33sh/g+hXlZrqVK4uKX2LAhcjZOS91JX2weBb0B6vIlzwuDKTLAF2Umx7Q2xZ7TOq7rf6IPmp6Wcbwq8sECanI4sf25/0f0PF+F94qZvbTQ09DIwtYjkgY+c60u/BNDIuGX2K2ebQSDGKDXjK6gY6ZIWebCdCwp5fedjUlFfaFyK0uL7B60+O7/XMppv2L+o/LBkKgAzsfMDBKmyFXA/UFVUMn333FX/hxQ7YQs6SfYKb4Lb819BfI/tUveD9sFJEMl4ve+jvVAyFe93BFziRSNkH9ugsBYDm9ESl9urjCNI9Ke2WtLvshvAIkbCyV+sDY5jiyimODd4Ehfc3wk0lhccboObo0/wQwJzlhFYwAOty485HvfBZkt+wdUmS1lGnIHK5rHRciJL/R3Mu09/cSXhUa022VesaPvZlHE/Ziefk8FehvqDee4vX7W1FaevTlnvm/kgTohJuQI19DOYod0t3fxvzf+saVgyiKoFTtq26GzqAPxwA0nlIgUwWxcxIyLHOC8NrMQmJbpDBBpMJum9/HMRqntowseGEh+brgU9MHOr/lRdsmuF3hUsXfOZGMj4u3bOHhfRPTQAkrHHd7eS6DzVszTm5MnlWzpaludw+0fTLz+CcmxGCnOCh1TSVLbcGCHECFCg5OqhR+Js68Hh3vj/etlrFmKHCGMPh2j/7UdRs1D1AQYQPwWqNPoyVCituyDKv427znDzqfym2lRqvWIG6vsgiosIBJXJRmb6fI7gJZTsnZm10XBuuUe6DlrZjRl0kgmDq3vp4Hyuc6o6zzV+JQeuo3emQq7fla1j+9T2AC0XpoRRk4ApAcblXNQKP9+UDreOwHWve78UZ4yzFcNYN4EM91X/a814N/mMpaZjdHmm8uDk7RxaivxjZRKNTJX+mdwH2QARmt2/k+KHP7571GgOc0wWP7/3L9tpO4mkR17afdHxTVzVjsPn/sqtljDbKzhb/BFA8fW0Pmd+FmJliNjT+To5ddi6WodxzfRKUa9KY1GcVDkEiSsl5LVn5uKFrpbsnvuVYAiu161P9P4gg4R8jCX276t4XfVFaR195576qrCKftyfn5sDzvTK2nIJiBWnXRvl7imQd5QnqeUzdWcnBe/nMxyliXr1MT74l+jEyamfLb2wEa+L5OudaQWt5EuI3cNSQafaAk3pHdG8pa7pCsmqZnrAV1jCAzi6Y3vL+t9Q6gMRLr2xkeN4MlhwjRJIBxR8Ly/azd6aK52iu7ErzaGCivdzXYXnB6FLKmEojZYXIIhu6vTBMItIsHNi+VNoibE0LV0NvTlfycp7h2lb2MX4eqErdsTMU7jO7wpeEJ5H5RIkMyrmSAiodMXmdQI=--SkkrHixcsemwqKcK--OsX5GEsQP1WqMrLWSEcQ3A=='
-                            ],
-                            [
-                                'signedHandle' => 'xU157sLscZRdrBMIbEHwZ+sqxBhOmtSc+c1phTVFwtmoTABl7tqs3oleK1/k/N4CtJ7tk896hKkgx2gUTpC8hpZ/N9D+o1tZ4jVjFSprIyCoZ+VE5BvFzTJrolBAuNRnqZbRqYcdF5PmSVMhcjCiAuDb5chk68c9+0SGAvyKXAjqs7O03HLkz4kZYHzEthCEOuach14x5wOk/HRRdnnU04lRBOzf/Zygn0rTS1Cmvg3Quz4aZhqkhYJM36iIQbBH+YfUAk59ILy0eRCsiziIgYxiB9pdYV2ARi9vFhz6UyKe46haBKGPxheBukmirbDME4S8kuXmgqodMg1uR2ZQt6Ay7KWdxHxQ8FoGhwyeR6XLgjW0iAmnSoHs5pH1C1hGmzWbgHSjXVamv6x37xR/qncyzf9aV9lL3ozOS/kiFk/Tk0wUT/B7tUPYnhtwtFQwhgTsJJeV2GobKBkH/aOR4fC3b7BGf/nxJzHLLD88/RiOu4tjLRczMFSRdUneyJBzDPvOgRvIi1H8nrU3TxR8K+wYMZjyj762GzFC9jvupo+gKcnQEG0rZLE7wq5nMENAJBoNhMqypxbODM0uXYQKUlx8igeLEQeqZ6giv0zoliCmK8jsaBTS7u5noTmsip7h+92EkPWS5ay1ukdHMI0Qu3klD9h3JmwP5Ek6ID6jPZKt1CyuyHrdq4x47wbzLdVqcK+zfRfUE7GK9p9Dcnm8VznV2KRfnqsHVJ3e29iuWWIKMppm/k/ss4yoEuJURJiwIxSviFYyVGOYXnmTHxGXha/87jT/dfVMxcnkx4KjUuMPPFre5bP6pM8yLB/tol4kgNY3T2eeaTn2epLhG7Zmm3JiWAO9RsmFq02Z/XG+8HqpMZ/hvy+TIjMmlybEo61DR0R48lKULj4ahsu++912kJhK1nGpI2WUqebXaD9ZQ5VF1Rdfh+kHJRr76Qnkt0/cteLHyaruexxE1nPoQiWx+TT1aqQz2glB/MsyFCyHspjnN98n79vSXn1rWPS2GFVOqQv77+BTlu49ve4GHPrXCvucy0mZBWn6FC+oM0A18pSpLRnxGz2kTISrAp60QN4LE8s2/Nf8MMFckHXX6odfIiDvmmWUBJcEBJthsJck3BUClFW/drvM7eawYQLbMDGrScinf85FgfODeMeONRWRTzTY7xDSZt3eyjIxPpwG/mxMmJVkzzN7SkPFITXcN6wYAsDWDFi2oFgnFV3d5AKFd9jhCVKl8Xi7otkceA4ChEfUUSxoH0FBGNs+10jOFCkJgzm+WlB+oB+Ew6XGw8+YF6/XCxBTZoTvKa8GqjaP2Me6btCFxoKZ3t7hCpSKgEYWZTPicy3v8bZEJB4i5KlDzxSqf+Ss2Yjyv0PmMgCYY8HdT3kvH6RXXPbwqaiqS+86i5fRkVvyteF11NK/Ys6VRZUyEU4UCvVbz4c/7RtXXt4EP9l4XQ=--IkdNXNLePMwO89aF--0jxFNB0mMrhuwnj86Grk8g=='
-                            ]
-                        ]
-                    ],
-                    'merchandise' => [
-                        'merchandiseLines' => [
-                            [
-                                'stableId' => $stable_id,
-                                'merchandise' => [
-                                    'productVariantReference' => [
-                                        'id' => 'gid://shopify/ProductVariantMerchandise/42721297924198',
-                                        'variantId' => 'gid://shopify/ProductVariant/42721297924198',
-                                        'properties' => [],
-                                        'sellingPlanId' => null,
-                                        'sellingPlanDigest' => null
-                                    ]
-                                ],
-                                'quantity' => [
-                                    'items' => [
-                                        'value' => 1
-                                    ]
-                                ],
-                                'expectedTotalPrice' => [
-                                    'value' => [
-                                        'amount' => '7.99',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ],
-                                'lineComponentsSource' => null,
-                                'lineComponents' => []
-                            ]
-                        ]
-                    ],
-                    'memberships' => [
-                        'memberships' => []
-                    ],
-                    'payment' => [
-                        'totalAmount' => [
-                            'any' => true
-                        ],
-                        'paymentLines' => [
-                            [
-                                'paymentMethod' => [
-                                    'directPaymentMethod' => [
-                                        'paymentMethodIdentifier' => $paymentMethodIdentifier,
-                                    'sessionId' => $cctoken,
-                                        'billingAddress' => [
-                                            'streetAddress' => [
-                                                'address1' => '4th Street Venue',
-                                                'city' => 'New york',
-                                                'countryCode' => 'US',
-                                                'postalCode' => '10080',
-                                                'firstName' => 'yashi Kumbi',
-                                                'lastName' => 'Hasi',
-                                                'zoneCode' => 'NY',
-                                                'phone' => ''
-                                            ]
-                                        ],
-                                        'cardSource' => null
-                                    ],
-                                    'giftCardPaymentMethod' => null,
-                                    'redeemablePaymentMethod' => null,
-                                    'walletPaymentMethod' => null,
-                                    'walletsPlatformPaymentMethod' => null,
-                                    'localPaymentMethod' => null,
-                                    'paymentOnDeliveryMethod' => null,
-                                    'paymentOnDeliveryMethod2' => null,
-                                    'manualPaymentMethod' => null,
-                                    'customPaymentMethod' => null,
-                                    'offsitePaymentMethod' => null,
-                                    'customOnsitePaymentMethod' => null,
-                                    'deferredPaymentMethod' => null,
-                                    'customerCreditCardPaymentMethod' => null,
-                                    'paypalBillingAgreementPaymentMethod' => null
-                                ],
-                                'amount' => [
-                                    'value' => [
-                                        'amount' => '13.98',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ]
-                            ]
-                        ],
-                        'billingAddress' => [
+    'query' => 'mutation SubmitForCompletion($input: NegotiationInput!, $attemptToken: String!) {
+        submitForCompletion(input: $input, attemptToken: $attemptToken) {
+            ...on SubmitSuccess {
+                receipt {
+                    id
+                    token
+                    redirectUrl
+                }
+            }
+            ...on SubmitFailed {
+                reason
+            }
+            ...on SubmitRejected {
+                errors {
+                    code
+                    localizedMessage
+                }
+            }
+        }
+    }',
+    'variables' => [
+        'input' => [
+            'sessionInput' => [
+                'sessionToken' => $x_checkout_one_session_token
+            ],
+            'queueToken' => $queue_token,
+            'discounts' => [
+                'lines' => [],
+                'acceptUnexpectedDiscounts' => true
+            ],
+            'delivery' => [
+                'deliveryLines' => [
+                    [
+                        'destination' => [
                             'streetAddress' => [
                                 'address1' => '4th Street Venue',
                                 'city' => 'New york',
@@ -647,68 +533,86 @@ foreach ($cc_lines as $cc_line) {
                                 'firstName' => 'yashi Kumbi',
                                 'lastName' => 'Hasi',
                                 'zoneCode' => 'NY',
-                                'phone' => ''
+                                'phone' => '',
+                                'oneTimeUse' => false
                             ]
-                        ]
-                    ],
-                    'buyerIdentity' => [
-                        'customer' => [
-                            'presentmentCurrency' => 'USD',
-                            'countryCode' => 'US'
                         ],
-                        'email' => 'proxybroproxy@gmail.com',
-                        'emailChanged' => false,
-                        'phoneCountryCode' => 'US',
-                        'marketingConsent' => [],
-                        'shopPayOptInPhone' => [
-                            'countryCode' => 'US'
+                        'selectedDeliveryStrategy' => [
+                            'deliveryStrategyByHandle' => [
+                                'handle' => 'eedd39a6a58d3e7832641de01fda4ff4-76541393eff3a16bf34c87eae9303e6b',
+                                'customDeliveryRate' => false
+                            ]
                         ],
-                        'rememberMe' => false
-                    ],
-                    'tip' => [
-                        'tipLines' => []
-                    ],
-                    'taxes' => [
-                        'proposedAllocations' => null,
-                        'proposedTotalAmount' => [
+                        'targetMerchandiseLines' => [
+                            'lines' => [
+                                [
+                                    'stableId' => $stable_id,
+                                ]
+                            ]
+                        ],
+                        'deliveryMethodTypes' => [
+                            'SHIPPING'
+                        ],
+                        'expectedTotalPrice' => [
                             'value' => [
-                                'amount' => '0',
+                                'amount' => '5.99',
                                 'currencyCode' => 'USD'
                             ]
-                        ],
-                        'proposedTotalIncludedAmount' => null,
-                        'proposedMixedStateTotalAmount' => null,
-                        'proposedExemptions' => []
-                    ],
-                    'note' => [
-                        'message' => null,
-                        'customAttributes' => []
-                    ],
-                    'localizationExtension' => [
-                        'fields' => []
-                    ],
-                    'nonNegotiableTerms' => null,
-                    'scriptFingerprint' => [
-                        'signature' => null,
-                        'signatureUuid' => null,
-                        'lineItemScriptChanges' => [],
-                        'paymentScriptChanges' => [],
-                        'shippingScriptChanges' => []
-                    ],
-                    'optionalDuties' => [
-                        'buyerRefusesDuties' => false
-                    ],
-                    'cartMetafields' => []
-                ],
-                'attemptToken' => ''.$checkoutToken.'8ix3lway4kj',
-                'metafields' => [],
-                'analytics' => [
-                    'requestUrl' => $urlbase.'/checkouts/cn/'.$checkoutToken,
-                    'pageId' => 'b2b0b81e-D05D-47C0-F64C-18D9467EA842'
+                        ]
+                    ]
                 ]
             ],
-            'operationName' => 'SubmitForCompletion'
-        ]);
+            'merchandise' => [
+                'merchandiseLines' => [
+                    [
+                        'stableId' => $stable_id,
+                        'quantity' => [
+                            'items' => [
+                                'value' => 1
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'payment' => [
+                'paymentLines' => [
+                    [
+                        'paymentMethod' => [
+                            'directPaymentMethod' => [
+                                'paymentMethodIdentifier' => $paymentMethodIdentifier,
+                                'sessionId' => $cctoken,
+                                'billingAddress' => [
+                                    'streetAddress' => [
+                                        'address1' => '4th Street Venue',
+                                        'city' => 'New york',
+                                        'countryCode' => 'US',
+                                        'postalCode' => '10080',
+                                        'firstName' => 'yashi Kumbi',
+                                        'lastName' => 'Hasi',
+                                        'zoneCode' => 'NY',
+                                        'phone' => ''
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'amount' => [
+                            'value' => [
+                                'amount' => '13.98',
+                                'currencyCode' => 'USD'
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'buyerIdentity' => [
+                'email' => 'proxybroproxy@gmail.com',
+                'marketingConsent' => []
+            ]
+        ],
+        'attemptToken' => $checkoutToken . '8ix3lway4kj'
+    ],
+    'operationName' => 'SubmitForCompletion'
+]);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postf);
         

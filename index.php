@@ -726,75 +726,53 @@ foreach ($cc_lines as $cc_line) {
         curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 
         $response4 = curl_exec($ch);
-        $http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        $debug_info['step3_http_code'] = $http_code4;
-        $debug_info['step3_response'] = $response4;
+$http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        $response4js = json_decode($response4);
-        curl_close($ch);
+$debug_info['step3_http_code'] = $http_code4;
+$debug_info['step3_response'] = $response4;
 
-        // 🔥 ADD DEBUG CODE HERE
-echo "<pre>=== STEP 3 DEBUG ===</pre>";
-echo "<pre>HTTP Code: $http_code4</pre>";
-echo "<pre>Response Length: " . strlen($response4) . " bytes</pre>";
+$response4js = json_decode($response4);
+curl_close($ch);
 
-// Save response to file
-file_put_contents('step3_debug.json', $response4);
-echo "<pre>Response saved to: step3_debug.json</pre>";
+// 🔥 ADD THIS TO SEE THE ACTUAL RESPONSE CONTENT
+echo "<pre>=== RAW RESPONSE ===</pre>";
+echo "<pre>" . htmlspecialchars($response4) . "</pre>";
+echo "<pre>=== END RAW RESPONSE ===</pre>";
 
-// Check if response is valid JSON
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo "<pre>❌ JSON Parse Error: " . json_last_error_msg() . "</pre>";
-    echo "<pre>Response sample: " . substr($response4, 0, 500) . "</pre>";
-} else {
-    echo "<pre>✅ JSON Parsed Successfully</pre>";
+// Save the full response
+file_put_contents('step3_full_response.json', $response4);
+
+// Check what's actually in the response
+if ($response4js) {
+    echo "<pre>=== PARSED RESPONSE STRUCTURE ===</pre>";
+    echo "<pre>" . json_encode($response4js, JSON_PRETTY_PRINT) . "</pre>";
     
-    // Debug the actual response structure
-    if (isset($response4js->data)) {
-        echo "<pre>📦 Data object found</pre>";
-        if (isset($response4js->data->submitForCompletion)) {
-            echo "<pre>🎯 SubmitForCompletion found</pre>";
-            
-            // Check what type of response we got
-            $typename = $response4js->data->submitForCompletion->__typename ?? 'Unknown';
-            echo "<pre>📋 Response Type: $typename</pre>";
-            
-            if ($typename === 'SubmitSuccess') {
-                if (isset($response4js->data->submitForCompletion->receipt)) {
-                    echo "<pre>✅ Receipt found!</pre>";
-                    $recipt_id = $response4js->data->submitForCompletion->receipt->id ?? '';
-                    echo "<pre>🔑 Receipt ID: " . ($recipt_id ?: 'Empty') . "</pre>";
-                    
-                    // Check receipt type
-                    $receipt_type = $response4js->data->submitForCompletion->receipt->__typename ?? 'Unknown';
-                    echo "<pre>📄 Receipt Type: $receipt_type</pre>";
-                }
-            } elseif ($typename === 'SubmitFailed') {
-                $reason = $response4js->data->submitForCompletion->reason ?? 'No reason provided';
-                echo "<pre>❌ Submit Failed: $reason</pre>";
-                $err = "Submit Failed: $reason";
-            } elseif ($typename === 'SubmitRejected') {
-                echo "<pre>❌ Submit Rejected</pre>";
-                if (isset($response4js->data->submitForCompletion->errors)) {
-                    foreach ($response4js->data->submitForCompletion->errors as $error) {
-                        $code = $error->code ?? 'Unknown';
-                        $message = $error->localizedMessage ?? 'No message';
-                        echo "<pre>   - Error: $code - $message</pre>";
-                    }
-                }
-            }
-        }
-    } elseif (isset($response4js->errors)) {
-        echo "<pre>❌ GraphQL Errors Found:</pre>";
-        foreach ($response4js->errors as $error) {
-            $message = $error->message ?? 'Unknown error';
-            echo "<pre>   - $message</pre>";
-        }
-    } else {
-        echo "<pre>⚠️ Unknown response structure</pre>";
-        echo "<pre>Full response: " . json_encode($response4js, JSON_PRETTY_PRINT) . "</pre>";
+    // Check all possible structures
+    if (isset($response4js->data->submitForCompletion->receipt->id)) {
+        $recipt_id = $response4js->data->submitForCompletion->receipt->id;
+        echo "<pre>🎫 RECEIPT ID FOUND: $recipt_id</pre>";
+    } 
+    elseif (isset($response4js->data->submitForCompletion->receipt)) {
+        echo "<pre>📦 Receipt object exists but no ID</pre>";
+        var_dump($response4js->data->submitForCompletion->receipt);
     }
+    elseif (isset($response4js->data->submitForCompletion)) {
+        echo "<pre>📋 SubmitForCompletion object exists</pre>";
+        var_dump($response4js->data->submitForCompletion);
+    }
+    elseif (isset($response4js->data)) {
+        echo "<pre>📊 Data object exists</pre>";
+        var_dump($response4js->data);
+    }
+    elseif (isset($response4js->errors)) {
+        echo "<pre>❌ GraphQL Errors:</pre>";
+        foreach ($response4js->errors as $error) {
+            echo "<pre>   - " . ($error->message ?? 'Unknown') . "</pre>";
+        }
+    }
+} else {
+    echo "<pre>❌ Failed to parse JSON response</pre>";
+    echo "<pre>JSON Error: " . json_last_error_msg() . "</pre>";
 }
 
 flush();

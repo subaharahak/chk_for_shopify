@@ -734,8 +734,87 @@ foreach ($cc_lines as $cc_line) {
         $response4js = json_decode($response4);
         curl_close($ch);
 
-        echo "<pre>🔍 Step 3 Response - HTTP: $http_code4</pre>";
-        flush();
+        // 🔥 ADD DEBUG CODE HERE
+echo "<pre>=== STEP 3 DEBUG ===</pre>";
+echo "<pre>HTTP Code: $http_code4</pre>";
+echo "<pre>Response Length: " . strlen($response4) . " bytes</pre>";
+
+// Save response to file
+file_put_contents('step3_debug.json', $response4);
+echo "<pre>Response saved to: step3_debug.json</pre>";
+
+// Check if response is valid JSON
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo "<pre>❌ JSON Parse Error: " . json_last_error_msg() . "</pre>";
+    echo "<pre>Response sample: " . substr($response4, 0, 500) . "</pre>";
+} else {
+    echo "<pre>✅ JSON Parsed Successfully</pre>";
+    
+    // Debug the actual response structure
+    if (isset($response4js->data)) {
+        echo "<pre>📦 Data object found</pre>";
+        if (isset($response4js->data->submitForCompletion)) {
+            echo "<pre>🎯 SubmitForCompletion found</pre>";
+            
+            // Check what type of response we got
+            $typename = $response4js->data->submitForCompletion->__typename ?? 'Unknown';
+            echo "<pre>📋 Response Type: $typename</pre>";
+            
+            if ($typename === 'SubmitSuccess') {
+                if (isset($response4js->data->submitForCompletion->receipt)) {
+                    echo "<pre>✅ Receipt found!</pre>";
+                    $recipt_id = $response4js->data->submitForCompletion->receipt->id ?? '';
+                    echo "<pre>🔑 Receipt ID: " . ($recipt_id ?: 'Empty') . "</pre>";
+                    
+                    // Check receipt type
+                    $receipt_type = $response4js->data->submitForCompletion->receipt->__typename ?? 'Unknown';
+                    echo "<pre>📄 Receipt Type: $receipt_type</pre>";
+                }
+            } elseif ($typename === 'SubmitFailed') {
+                $reason = $response4js->data->submitForCompletion->reason ?? 'No reason provided';
+                echo "<pre>❌ Submit Failed: $reason</pre>";
+                $err = "Submit Failed: $reason";
+            } elseif ($typename === 'SubmitRejected') {
+                echo "<pre>❌ Submit Rejected</pre>";
+                if (isset($response4js->data->submitForCompletion->errors)) {
+                    foreach ($response4js->data->submitForCompletion->errors as $error) {
+                        $code = $error->code ?? 'Unknown';
+                        $message = $error->localizedMessage ?? 'No message';
+                        echo "<pre>   - Error: $code - $message</pre>";
+                    }
+                }
+            }
+        }
+    } elseif (isset($response4js->errors)) {
+        echo "<pre>❌ GraphQL Errors Found:</pre>";
+        foreach ($response4js->errors as $error) {
+            $message = $error->message ?? 'Unknown error';
+            echo "<pre>   - $message</pre>";
+        }
+    } else {
+        echo "<pre>⚠️ Unknown response structure</pre>";
+        echo "<pre>Full response: " . json_encode($response4js, JSON_PRETTY_PRINT) . "</pre>";
+    }
+}
+
+flush();
+
+// Continue with existing code...
+if (isset($response4js->data->submitForCompletion->receipt->id)) {
+    $recipt_id = $response4js->data->submitForCompletion->receipt->id;
+} elseif (isset($response4js->data->submitForCompletion->__typename)) {
+    // Error already set above
+} elseif (isset($response4js->errors)) {
+    $err = "GraphQL Errors";
+    foreach ($response4js->errors as $error) {
+        $err .= " - " . ($error->message ?? 'Unknown error');
+    }
+}
+
+if (empty($recipt_id) && empty($err)) {
+    $err = 'Receipt id is empty - Check step 3 response for details';
+    $debug_info['step3_parsed'] = $response4js;
+}
 
         // Enhanced receipt ID extraction with better error handling
         if (isset($response4js->data->submitForCompletion->receipt->id)) {

